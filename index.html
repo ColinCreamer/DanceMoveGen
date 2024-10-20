@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Dance Move Selector</title>
+    <style>
+        /* Version 22 */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            font-size: 36px;
+        }
+        #danceStyle {
+            font-size: 40px; /* Larger dance style text */
+            margin: 20px 0; /* Moved above the dance move */
+        }
+        #danceMove {
+            font-size: 48px; /* Emphasized dance move */
+            margin: 20px 0;
+        }
+        #role {
+            font-size: 24px; /* Role text size */
+            margin: 10px 0;
+        }
+        #roleImage img {
+            max-height: 250px; /* Set image height to 250px */
+            display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 0 10px); /* Drop shadow applied here */
+        }
+        #roleImage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        button {
+            font-size: 20px; /* Larger button text */
+            padding: 10px 20px; /* Button padding */
+            cursor: pointer; /* Pointer cursor for button */
+        }
+        select {
+            width: 250px; /* Width for dance type selection */
+            height: auto; /* Ensure all options are visible */
+        }
+        #progressBarContainer {
+            width: 100%;
+            background-color: #e0e0e0; /* Background of progress bar */
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        #progressBar {
+            height: 20px;
+            background-color: #4caf50; /* Color of the progress */
+            width: 0; /* Start at 0% */
+            border-radius: 5px;
+            transition: width 0.3s; /* Smooth transition */
+        }
+        #progressText {
+            margin-top: 5px; /* Space between progress bar and text */
+            font-size: 16px; /* Size for the progress text */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Random Dance Move Selector - v22</h1>
+
+    <label for="danceTypes">Select Dance Styles:</label><br>
+    <select id="danceTypes" multiple size="6"> <!-- Ensures all options are visible -->
+        <option value="Foxtrot">Foxtrot</option>
+        <option value="Waltz">Waltz</option>
+        <option value="Tango">Tango</option>
+        <option value="Rhumba">Rhumba</option>
+        <option value="Cha-Cha">Cha-Cha</option>
+        <option value="East Coast Swing">East Coast Swing</option>
+    </select><br><br>
+
+    <label for="roles">Select Role:</label><br>
+    <select id="roles">
+        <option value="Both">Both</option>
+        <option value="Lead">Lead</option>
+        <option value="Follow">Follow</option>
+    </select><br><br>
+
+    <label>
+        <input type="checkbox" id="cycleMoves"> Cycle through all selected moves
+    </label><br><br>
+
+    <button onclick="generateDanceMove()">Generate Dance Move</button>
+
+    <div id="danceStyle"></div> <!-- Dance style displayed here -->
+    <div id="danceMove"></div>
+    <div id="role"></div> <!-- Role displayed here -->
+    <div id="roleImage"></div>
+
+    <div id="progressBarContainer">
+        <div id="progressBar"></div>
+    </div>
+    <div id="progressText">0 / 0</div> <!-- Progress text for current and total moves -->
+
+    <script>
+        const danceMoves = {
+            Foxtrot: [
+                "Basic", "Outside Basic", "Promenade Basic", "Left Ad-lib", 
+                "Right Ad-lib", "Side Rock Ad-lib", "CTB Closed Turning Basic", 
+                "OTB Outside Turning Basic"
+            ],
+            Waltz: [
+                "Basic Box (in place)", "Progressive", "Left 1/4 Turn", 
+                "Right 1/4 Turn", "Left 3/8th Turn", "Right 3/8th Turn", 
+                "4a. Forward and Back Balance Steps", "4b. Side Balance Steps", 
+                "4c. 5th Position Balance Steps"
+            ],
+            Tango: [
+                "Basic Step", "Outside Basic", "PTL Promenade Basic Turning Left", 
+                "PTR Promenade Basic Turning Right", "Corte'", "Rocking Corte'"
+            ],
+            Rhumba: [
+                "Basic Box Step", "Underarm Turn (Reg. 6 step)", 
+                "Underarm Turn (Adv. 3 Step)", "Cross Body Lead", 
+                "5th Position Breaks"
+            ],
+            "Cha-Cha": [
+                "Basic", "Progressive Basic", "Single CrossOver Break", 
+                "Double CrossOver Break", "Natural Underarm Turn", 
+                "2-Way Underarm Turn"
+            ],
+            "East Coast Swing": [
+                "Single Time Basic", "Double Time Basic", "Tripple Time Basic", 
+                "Release Break", "Underarm Turn", "Underarm with Man Turning"
+            ]
+        };
+
+        let previousMove = "";
+        let moveIndex = 0; // Index for cycling through moves
+        let completedMoves = new Set(); // Store completed moves
+        const danceTypesSelect = document.getElementById("danceTypes");
+        const rolesSelect = document.getElementById("roles");
+        const cycleMovesCheckbox = document.getElementById("cycleMoves");
+        const danceStyleElement = document.getElementById("danceStyle");
+        const danceMoveElement = document.getElementById("danceMove");
+        const roleElement = document.getElementById("role");
+        const roleImageElement = document.getElementById("roleImage");
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+
+        // Load saved settings from local storage
+        window.onload = function() {
+            // Restore selected dance types
+            const savedDanceTypes = localStorage.getItem('danceTypes');
+            if (savedDanceTypes) {
+                const danceTypesArray = savedDanceTypes.split(',');
+                Array.from(danceTypesSelect.options).forEach(option => {
+                    option.selected = danceTypesArray.includes(option.value);
+                });
+            }
+
+            // Restore selected role
+            const savedRole = localStorage.getItem('role');
+            if (savedRole) {
+                rolesSelect.value = savedRole;
+            }
+
+            // Restore cycle moves option
+            const cycleMovesSetting = localStorage.getItem('cycleMoves');
+            cycleMovesCheckbox.checked = cycleMovesSetting === 'true';
+
+            // Update UI based on saved settings
+            updateProgressText();
+        };
+
+        danceTypesSelect.addEventListener('change', () => {
+            updateProgressText();
+            saveSettings();
+        });
+
+        rolesSelect.addEventListener('change', () => {
+            updateProgressText(); // Update progress when role changes
+            saveSettings();
+        });
+        cycleMovesCheckbox.addEventListener('change', saveSettings);
+
+        function generateDanceMove() {
+            const selectedDanceTypes = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
+            if (selectedDanceTypes.length === 0) {
+                alert("Please select at least one dance type.");
+                return;
+            }
+
+            let danceType;
+            let danceMove;
+            let role;
+
+            if (cycleMovesCheckbox.checked) {
+                // Cycle through moves
+                danceType = selectedDanceTypes[moveIndex % selectedDanceTypes.length];
+                danceMove = danceMoves[danceType][moveIndex % danceMoves[danceType].length];
+                role = getRole();
+                completedMoves.add(danceMove + " " + role); // Track moves uniquely
+                moveIndex++;
+            } else {
+                // Randomly select dance type and move
+                danceType = selectedDanceTypes[Math.floor(Math.random() * selectedDanceTypes.length)];
+                danceMove = danceMoves[danceType][Math.floor(Math.random() * danceMoves[danceType].length)];
+                role = getRole();
+                
+                // Ensure the same dance move is not generated twice in a row
+                while (danceMove === previousMove) {
+                    danceMove = danceMoves[danceType][Math.floor(Math.random() * danceMoves[danceType].length)];
+                }
+                previousMove = danceMove;
+
+                // Mark the move as completed
+                completedMoves.add(danceMove + " " + role); // Track moves uniquely
+            }
+
+            // Update UI
+            danceStyleElement.textContent = danceType; // Update dance style text
+            danceMoveElement.textContent = danceMove; // Update dance move text
+            roleElement.textContent = ""; // Clear role text
+            roleImageElement.innerHTML = `
+                <div id="roleImage">
+                    <img src="${role === "Lead" ?
+					"LeadDancerSilhouette.png" : 
+                    "FollowDancerSilhouette.png"}" 
+                    style="height: 250px; filter: drop-shadow(0 0 10px ${role === "Lead" ? "blue" : "red"});">
+                </div>
+            `;
+            roleElement.textContent = role; // Update role text
+
+            // Update the progress text
+            updateProgressText();
+        }
+
+        function getRole() {
+            const selectedRole = rolesSelect.value;
+            if (selectedRole === "Both") {
+                return Math.random() < 0.5 ? "Lead" : "Follow";
+            }
+            return selectedRole;
+        }
+
+        function updateProgressBar(completed, total) {
+            const percentage = (total === 0) ? 0 : (completed / total) * 100; // Calculate percentage
+            progressBar.style.width = `${percentage}%`; // Update progress bar width
+            progressText.textContent = `${completed} / ${total}`; // Update progress text
+        }
+
+        function saveSettings() {
+            const selectedDanceTypes = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
+            const selectedRole = rolesSelect.value;
+            localStorage.setItem('danceTypes', selectedDanceTypes.join(','));
+            localStorage.setItem('role', selectedRole);
+            localStorage.setItem('cycleMoves', cycleMovesCheckbox.checked);
+        }
+
+        function updateProgressText() {
+            const selectedDanceTypes = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
+            // Count both Lead and Follow for total moves
+            const totalMoves = selectedDanceTypes.length ? selectedDanceTypes.reduce((acc, type) => acc + danceMoves[type].length * 2, 0) : 0; 
+            updateProgressBar(completedMoves.size, totalMoves); // Update progress bar
+        }
+    </script>
+</body>
+</html>
+
