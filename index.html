@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Dance Move Selector</title>
+    <title>Random Dance Move Selector - v31.3</title>
     <style>
-        /* Version 26 */
+        /* Version 31 */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 20px;
+            cursor: pointer; /* Change cursor to pointer for clicking */
         }
         h1 {
             font-size: 36px;
@@ -65,9 +66,9 @@
         }
     </style>
 </head>
-<body>
+<body">
 
-    <h1>Random Dance Move Selector - v26</h1>
+    <h1>Random Dance Move Selector - v31.3</h1>
 
     <label for="danceTypes">Select Dance Styles:</label><br>
     <select id="danceTypes" multiple size="6">
@@ -93,7 +94,13 @@
         <input type="checkbox" id="randomCycle"> Generate randomly within cycle
     </label><br><br>
 
-    <button onclick="generateDanceMove()">Generate Dance Move</button>
+    <button onclick="generateDanceMove(event)">Generate Dance Move</button>
+
+    <div id="voiceToggle">
+        <label for="voiceEnabled">Enable Voice:</label>
+        <input type="checkbox" id="voiceEnabled">
+    </div>
+
 
     <div id="danceStyle"></div>
     <div id="danceMove"></div>
@@ -119,8 +126,8 @@
                 "4c. 5th Position Balance Steps"
             ],
             Tango: [
-                "Basic Step", "Outside Basic", "PTL Promenade Basic Turning Left", 
-                "PTR Promenade Basic Turning Right", "Corte'", "Rocking Corte'"
+                "Basic Step", "Outside Basic", "PTL - Promenade Basic Turning Left", 
+                "PTR - Promenade Basic Turning Right", "Corte'", "Rocking Corte'"
             ],
             Rhumba: [
                 "Basic Box Step", "Underarm Turn (Reg. 6 step)", 
@@ -138,13 +145,13 @@
             ]
         };
 
-        let moveIndex = 0;
         let completedMoves = new Set();
         let remainingMoves = [];
         const danceTypesSelect = document.getElementById("danceTypes");
         const rolesSelect = document.getElementById("roles");
         const cycleMovesCheckbox = document.getElementById("cycleMoves");
         const randomCycleCheckbox = document.getElementById("randomCycle");
+		const enableVoiceCheckbox = document.getElementById("voiceEnabled");
         const danceStyleElement = document.getElementById("danceStyle");
         const danceMoveElement = document.getElementById("danceMove");
         const roleElement = document.getElementById("role");
@@ -173,21 +180,50 @@
             const randomCycleSetting = localStorage.getItem('randomCycle');
             randomCycleCheckbox.checked = randomCycleSetting === 'true';
 
+
+            const enableVoiceSetting = localStorage.getItem('enableVoice');
+            enableVoiceCheckbox.checked = enableVoiceSetting === 'true';
+
+
+
+
             updateProgressText();
         };
 
         danceTypesSelect.addEventListener('change', () => {
+            resetMovesIfNeeded(); // Reset moves if styles are deselected
             updateProgressText();
             saveSettings();
         });
 
         rolesSelect.addEventListener('change', () => {
+            resetMovesIfNeeded(); // Reset moves if role is changed
             updateProgressText();
             saveSettings();
         });
 
         cycleMovesCheckbox.addEventListener('change', saveSettings);
         randomCycleCheckbox.addEventListener('change', saveSettings);
+		//enableVoiceCheckbox.addEventListener('change', saveSettings; );
+		
+		enableVoiceCheckbox.addEventListener('change', function() {
+			if (!this.checked) {
+				synth.cancel();
+			}
+			saveSettings();
+		});
+
+
+		
+		// Add event listener for clicks on the body, excluding the buttons and UI elements
+        document.body.addEventListener('click', function(event) {
+            const ignoredElements = ['BUTTON', 'SELECT', 'OPTION', 'INPUT', 'LABEL'];
+            if (!ignoredElements.includes(event.target.tagName)) {
+                generateDanceMove();
+            }
+        });
+		
+		
 
         function generateDanceMove() {
             const selectedDanceTypes = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
@@ -221,7 +257,7 @@
                 // Reset cycle and progress bar if all moves have been completed
                 if (remainingMoves.length === 0) {
                     completedMoves.clear();
-                    updateProgressBar(0, remainingMoves.length);
+                    updateProgressBar(0, 0);
                 }
 
             } else {
@@ -236,10 +272,14 @@
             roleElement.textContent = role;
             roleImageElement.innerHTML = `
                 <img src="${role === "Lead" ? 'LeadDancerSilhouette.png' : 'FollowDancerSilhouette.png'}" 
-                style="height: 250px; filter: drop-shadow(0 0 10px ${role === "Lead" ? "blue" : "red"});">
+                style="height: 250px; filter: drop-shadow(0 0 10px ${role === "Lead" ? "blue" : "red"})">
             `;
 
-            updateProgressText();
+            updateProgressText(); // Update the progress text after generating a move
+			
+			if (enableVoiceCheckbox.checked) {
+                narrateMove(danceType, danceMove, role); // Call the voice narration function
+            }
         }
 
         function getRole() {
@@ -269,22 +309,37 @@
             if (randomCycleCheckbox.checked) {
                 remainingMoves = shuffleArray(remainingMoves);
             }
-
-            moveIndex = 0; // Reset move index for cycling
+            updateProgressText(); // Update progress text after preparing the moves
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+
+		let previousDanceTypeSelections = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
+
+        function resetMovesIfNeeded() {
+            const selectedDanceTypes = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
+            const selectedRole = rolesSelect.value;
+
+			// Check for deselection
+			const deselected = previousDanceTypeSelections.filter(selection => !selectedDanceTypes.includes(selection));
+
+			// Update previousDanceTypeSelections to the current ones for the next change event
+			previousDanceTypeSelections = selectedDanceTypes;
+
+
+            // Reset remaining moves and completed moves if switching from "Both" to a single role
+            if (selectedRole !== "Both" || selectedDanceTypes.length === 0 || deselected.length > 0){
+                completedMoves.clear();
+                remainingMoves = [];
+                updateProgressBar(0, 0);
+				//rcc apmpt
+				//if (cycleMovesCheckbox.checked) prepareMoveSet(selectedDanceTypes);
             }
-            return array;
-        }
+			
+			
+			
 
-        function updateProgressBar(completed, total) {
-            const percentage = total > 0 ? (completed / total) * 100 : 0;
-            progressBar.style.width = percentage + '%';
-            progressText.textContent = `${completed} / ${total}`;
+
+			
         }
 
         function updateProgressText() {
@@ -305,6 +360,18 @@
 
             const completed = completedMoves.size;
             updateProgressBar(completed, totalMoves);
+
+            // Reset progress if no styles or roles selected
+            if (totalMoves === 0 || selectedRole === "") {
+                completedMoves.clear(); // Reset the completed moves
+                remainingMoves = []; // Reset remaining moves
+                updateProgressBar(0, totalMoves);
+            }
+        }
+
+        function updateProgressBar(completed, total) {
+            progressBar.style.width = total === 0 ? "0%" : (completed / total * 100) + "%";
+            progressText.textContent = `${completed} / ${total}`;
         }
 
         function saveSettings() {
@@ -313,9 +380,34 @@
             localStorage.setItem('role', rolesSelect.value);
             localStorage.setItem('cycleMoves', cycleMovesCheckbox.checked);
             localStorage.setItem('randomCycle', randomCycleCheckbox.checked);
+			localStorage.setItem('enableVoice', enableVoiceCheckbox.checked);
+			
         }
 
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+		
+		
+		const synth = window.speechSynthesis;
+		
+		// Web Speech API function to narrate the move
+        function narrateMove(danceType, danceMove, role) {
+		
+			synth.cancel();
+		
+			const removedDanceMoveNumber = danceMove.replace("4a.",'').replace("4b.",'').replace("4c.",'').replace("Reg. ",'Regular').replace("Adv. ",'Advanced ');
+		
+            const message = `${danceType} ${removedDanceMoveNumber} - ${role}.`;
+            const utterance = new SpeechSynthesisUtterance(message);
+			utterance.rate=1.5;
+            speechSynthesis.speak(utterance);
+        }
+		
     </script>
 </body>
 </html>
-
