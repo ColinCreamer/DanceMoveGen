@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Dance Move Selector - v31.3</title>
+    <title>Random Dance Move Selector - v32</title>
     <style>
-        /* Version 31 */
+        /* Version 32 */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -64,11 +64,23 @@
             margin-top: 5px;
             font-size: 16px;
         }
+		
+		 #autoDrillSettings {
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+        }
+        #autoDrillSlider {
+            width: 200px;
+        }
+        #sliderValue {
+            font-size: 18px;
+        }
+		
     </style>
 </head>
-<body">
+<body>
 
-    <h1>Random Dance Move Selector - v31.3</h1>
+    <h1>Random Dance Move Selector - v32</h1>
 
     <label for="danceTypes">Select Dance Styles:</label><br>
     <select id="danceTypes" multiple size="6">
@@ -93,6 +105,20 @@
     <label>
         <input type="checkbox" id="randomCycle"> Generate randomly within cycle
     </label><br><br>
+	
+	
+	<label>
+        <input type="checkbox" id="autoDrillCheckbox"> Enable Auto Drill Mode
+    </label><br>
+
+    <div id="autoDrillSettings">
+        <label for="autoDrillSlider">Auto Drill Interval (seconds):</label><br>
+        <input type="range" id="autoDrillSlider" min="1" max="60" value="5">
+        <span id="sliderValue">5</span> seconds
+    </div><br>
+
+	
+	
 
     <button onclick="generateDanceMove(event)">Generate Dance Move</button>
 
@@ -147,6 +173,8 @@
 
         let completedMoves = new Set();
         let remainingMoves = [];
+		let autoDrillIntervalId = null;
+		
         const danceTypesSelect = document.getElementById("danceTypes");
         const rolesSelect = document.getElementById("roles");
         const cycleMovesCheckbox = document.getElementById("cycleMoves");
@@ -158,6 +186,10 @@
         const roleImageElement = document.getElementById("roleImage");
         const progressBar = document.getElementById("progressBar");
         const progressText = document.getElementById("progressText");
+		const autoDrillCheckbox = document.getElementById("autoDrillCheckbox");
+        const autoDrillSlider = document.getElementById("autoDrillSlider");
+        const sliderValueDisplay = document.getElementById("sliderValue");
+		const autoDrillSettings = document.getElementById("autoDrillSettings");
 
         // Load saved settings from local storage
         window.onload = function() {
@@ -184,7 +216,14 @@
             const enableVoiceSetting = localStorage.getItem('enableVoice');
             enableVoiceCheckbox.checked = enableVoiceSetting === 'true';
 
+			const autoDrillSetting = localStorage.getItem('autoDrill');
+            autoDrillCheckbox.checked = autoDrillSetting === 'true';
 
+            const autoDrillSliderSetting = localStorage.getItem('autoDrillSlider');
+            autoDrillSlider.value = autoDrillSliderSetting || 5;
+            sliderValueDisplay.textContent = autoDrillSlider.value;
+
+            toggleAutoDrillSettings();
 
 
             updateProgressText();
@@ -214,12 +253,51 @@
 		});
 
 
+
+		function toggleAutoDrillSettings() {
+			if (autoDrillCheckbox.checked) {
+				autoDrillSettings.style.display = 'block';
+				startAutoDrill();
+			} else {
+				autoDrillSettings.style.display = 'none';
+				stopAutoDrill();
+			}
+			saveSettings();
+		}
+
+		autoDrillCheckbox.addEventListener('change', toggleAutoDrillSettings);
+
+		autoDrillSlider.addEventListener('input', function() {
+			sliderValueDisplay.textContent = autoDrillSlider.value;
+			if (autoDrillCheckbox.checked) {
+				stopAutoDrill();
+				startAutoDrill();
+			}
+			saveSettings();
+		});
+
+		function startAutoDrill() {
+			const interval = autoDrillSlider.value * 1000;
+			autoDrillIntervalId = setInterval(generateDanceMove, interval);
+		}
+
+		function stopAutoDrill() {
+			if (autoDrillIntervalId !== null) {
+				clearInterval(autoDrillIntervalId);
+				autoDrillIntervalId = null;
+			}
+		}
+
+
+
 		
 		// Add event listener for clicks on the body, excluding the buttons and UI elements
         document.body.addEventListener('click', function(event) {
             const ignoredElements = ['BUTTON', 'SELECT', 'OPTION', 'INPUT', 'LABEL'];
             if (!ignoredElements.includes(event.target.tagName)) {
-                generateDanceMove();
+				if (!autoDrillCheckbox.checked) {
+					generateDanceMove();
+				}
             }
         });
 		
@@ -382,6 +460,10 @@
             localStorage.setItem('randomCycle', randomCycleCheckbox.checked);
 			localStorage.setItem('enableVoice', enableVoiceCheckbox.checked);
 			
+			localStorage.setItem('autoDrill', autoDrillCheckbox.checked);
+			localStorage.setItem('autoDrillSlider', autoDrillSlider.value);
+			
+			
         }
 
         function shuffleArray(array) {
@@ -404,7 +486,7 @@
 		
             const message = `${danceType} ${removedDanceMoveNumber} - ${role}.`;
             const utterance = new SpeechSynthesisUtterance(message);
-			utterance.rate=1.5;
+			utterance.rate=1.9;
             speechSynthesis.speak(utterance);
         }
 		
