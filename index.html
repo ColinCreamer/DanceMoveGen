@@ -121,6 +121,7 @@
         <input type="range" id="autoDrillSlider" min="1" max="60" value="5">
         <span id="sliderValue">5</span> seconds
 		<button id="autoDrillPauseToggle">⏸</button>
+		<span id="autoDrillSecondsLeft">5.</span> sec Left
     </div><br>
 
 	
@@ -199,6 +200,7 @@
         const sliderValueDisplay = document.getElementById("sliderValue");
 		const autoDrillSettings = document.getElementById("autoDrillSettings");
 		const autoDrillPauseToggle = document.getElementById("autoDrillPauseToggle");
+		const autoDrillSecondsLeft = document.getElementById("autoDrillSecondsLeft");
 
         // Load saved settings from local storage
         window.onload = function() {
@@ -277,7 +279,7 @@
 
 		autoDrillSlider.addEventListener('input', function() {
 			sliderValueDisplay.textContent = autoDrillSlider.value;
-			timeRemaining = autoDrillSlider.value * 1000;
+			timeRemaining = autoDrillSlider.value;
 			if (autoDrillCheckbox.checked) {
 				stopAutoDrill();
 				startAutoDrill();
@@ -299,9 +301,18 @@
 		function startAutoDrill() {
             if (!autoDrillPaused) {
                 autoDrillIntervalId = setInterval(() => {
-                    generateDanceMove();
-                    timeRemaining = autoDrillSlider.value * 1000;
-                }, autoDrillSlider.value * 1000);
+				
+				timeRemaining --;
+				
+				
+				if (timeRemaining <= 0){
+				    generateDanceMove();
+                    timeRemaining = autoDrillSlider.value;
+				}
+				
+				autoDrillSecondsLeft.textContent = timeRemaining;
+
+                }, 1000);
             }
         }
 
