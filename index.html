@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Dance Move Selector - v32</title>
+    <title>Random Dance Move Selector - v33</title>
     <style>
-        /* Version 32 */
+        /* Version 33 */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -75,12 +75,17 @@
         #sliderValue {
             font-size: 18px;
         }
+		#autoDrillPauseToggle{
+			margin: 0px;
+			padding: 2px;
+			text-align: center;
+		}
 		
     </style>
 </head>
 <body>
 
-    <h1>Random Dance Move Selector - v32</h1>
+    <h1>Random Dance Move Selector - v33</h1>
 
     <label for="danceTypes">Select Dance Styles:</label><br>
     <select id="danceTypes" multiple size="6">
@@ -103,7 +108,7 @@
         <input type="checkbox" id="cycleMoves"> Cycle through all selected moves
     </label><br>
     <label>
-        <input type="checkbox" id="randomCycle"> Generate randomly within cycle
+        <input type="checkbox" id="randomCycle"> Random Order
     </label><br><br>
 	
 	
@@ -112,9 +117,10 @@
     </label><br>
 
     <div id="autoDrillSettings">
-        <label for="autoDrillSlider">Auto Drill Interval (seconds):</label><br>
+        <label for="autoDrillSlider">Auto Drill Interval:</label><br>
         <input type="range" id="autoDrillSlider" min="1" max="60" value="5">
         <span id="sliderValue">5</span> seconds
+		<button id="autoDrillPauseToggle">⏸</button>
     </div><br>
 
 	
@@ -141,9 +147,9 @@
     <script>
         const danceMoves = {
             Foxtrot: [
-                "Basic", "Outside Basic", "Promenade Basic", "Left Ad-lib", 
+                "Basic", "Promenade Basic", "Left Ad-lib", 
                 "Right Ad-lib", "Side Rock Ad-lib", "CTB Closed Turning Basic", 
-                "OTB Outside Turning Basic"
+                "OTB Outside Turning Basic", "Cross Body Lead"
             ],
             Waltz: [
                 "Basic Box (in place)", "Progressive", "Left 1/4 Turn", 
@@ -153,12 +159,12 @@
             ],
             Tango: [
                 "Basic Step", "Outside Basic", "PTL - Promenade Basic Turning Left", 
-                "PTR - Promenade Basic Turning Right", "Corte'", "Rocking Corte'"
+                "PTR - Promenade Basic Turning Right", "Corte'", "Rocking Corte'", "Right Side Fan", "Three Fan Combination"
             ],
             Rhumba: [
                 "Basic Box Step", "Underarm Turn (Reg. 6 step)", 
                 "Underarm Turn (Adv. 3 Step)", "Cross Body Lead", 
-                "5th Position Breaks"
+                "5th Position Breaks", "Open Cuban Walk"
             ],
             "Cha-Cha": [
                 "Basic", "Progressive Basic", "Single CrossOver Break", 
@@ -174,6 +180,8 @@
         let completedMoves = new Set();
         let remainingMoves = [];
 		let autoDrillIntervalId = null;
+		let autoDrillPaused = false;
+        let timeRemaining = 0;
 		
         const danceTypesSelect = document.getElementById("danceTypes");
         const rolesSelect = document.getElementById("roles");
@@ -190,6 +198,7 @@
         const autoDrillSlider = document.getElementById("autoDrillSlider");
         const sliderValueDisplay = document.getElementById("sliderValue");
 		const autoDrillSettings = document.getElementById("autoDrillSettings");
+		const autoDrillPauseToggle = document.getElementById("autoDrillPauseToggle");
 
         // Load saved settings from local storage
         window.onload = function() {
@@ -243,7 +252,6 @@
 
         cycleMovesCheckbox.addEventListener('change', saveSettings);
         randomCycleCheckbox.addEventListener('change', saveSettings);
-		//enableVoiceCheckbox.addEventListener('change', saveSettings; );
 		
 		enableVoiceCheckbox.addEventListener('change', function() {
 			if (!this.checked) {
@@ -269,6 +277,7 @@
 
 		autoDrillSlider.addEventListener('input', function() {
 			sliderValueDisplay.textContent = autoDrillSlider.value;
+			timeRemaining = autoDrillSlider.value * 1000;
 			if (autoDrillCheckbox.checked) {
 				stopAutoDrill();
 				startAutoDrill();
@@ -276,10 +285,26 @@
 			saveSettings();
 		});
 
+        autoDrillPauseToggle.addEventListener('click', function() {
+            autoDrillPaused = !autoDrillPaused;
+            autoDrillPauseToggle.textContent = autoDrillPaused ? '⏵' : '⏸';
+            if (autoDrillPaused) {
+                clearInterval(autoDrillIntervalId);
+            } else {
+                startAutoDrill();
+            }
+        });
+
+
 		function startAutoDrill() {
-			const interval = autoDrillSlider.value * 1000;
-			autoDrillIntervalId = setInterval(generateDanceMove, interval);
-		}
+            if (!autoDrillPaused) {
+                autoDrillIntervalId = setInterval(() => {
+                    generateDanceMove();
+                    timeRemaining = autoDrillSlider.value * 1000;
+                }, autoDrillSlider.value * 1000);
+            }
+        }
+
 
 		function stopAutoDrill() {
 			if (autoDrillIntervalId !== null) {
