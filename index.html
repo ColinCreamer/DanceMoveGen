@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Dance Move Selector - v33</title>
+    <title>Random Dance Move Selector - v34</title>
     <style>
-        /* Version 33 */
+        /* Version 34 */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -85,7 +85,7 @@
 </head>
 <body>
 
-    <h1>Random Dance Move Selector - v33</h1>
+    <h1>Random Dance Move Selector - v34</h1>
 
     <label for="danceTypes">Select Dance Styles:</label><br>
     <select id="danceTypes" multiple size="6">
@@ -135,6 +135,14 @@
         <label for="voiceEnabled">Enable Voice:</label>
         <input type="checkbox" id="voiceEnabled">
     </div>
+	
+	<label>
+	<input type="checkbox" id="playMusicCheckbox" />
+		Play music
+	</label>
+	
+	<div id="currentSongTitle"></div>
+	
 
 
     <div id="danceStyle"></div>
@@ -186,6 +194,97 @@
 		let autoDrillPaused = false;
         let timeRemaining = 0;
 		
+		
+		/*
+		let musicList = {};
+		fetch('MusicList.json')
+		  .then(response => response.json())
+		  .then(data => {
+			musicList = data;
+		  })
+		  .catch(error => console.error('Error loading music list:', error));
+		*/
+		
+		
+		let currentSong = null;
+		let currentSongDanceType = null;
+		let audio = new Audio();
+
+
+		
+		let musicList = {
+		  "Waltz": [
+			{
+			  "title": "Tales From Vienna Woods",
+			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.01.%20Tales%20From%20Vienna%20Woods.mp3"
+			},
+			{
+			  "title": "Blue Danube",
+			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.02.%20Blue%20Danube.mp3"
+			},
+			{
+			  "title": "Artists Life",
+			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.03.%20Artists%20Life.mp3"
+			},
+			{
+			  "title": "Acceleration Waltz",
+			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.04.%20Acceleration%20Waltz.mp3"
+			},
+			{
+			  "title": "Wine, Women And Song",
+			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.05.%20Wine%2C%20Women%20And%20Song.mp3"
+			},
+			{
+			  "title": "Voices Of Spring",
+			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F02.01.%20Voices%20Of%20Spring.mp3"
+			},
+			{
+			  "title": "Die Fliedermause (The Bat)",
+			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F02.03.%20Die%20Fliedermause%20%28The%20Bat%29.mp3"
+			},
+			{
+			  "title": "Emperor Waltz",
+			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F02.04.%20Emperor%20Waltz.mp3"
+			}
+		  ],
+		  "Tango": [
+			{
+			  "title": "Por Una Cabeza",
+			  "url": "https://archive.org/download/CarlosGardelPorUnaCabeza/Carlos-Gardel-Por-una-cabeza.mp3"
+			},
+			{
+			  "title": "El Malevo",
+			  "url": "https://archive.org/download/78_el-malevo_kramer-e-i-suoi-solisti-j-de-caro_gbia3020658a/EL%20MALEVO%20-%20KRAMER%20E%20I%20SUOI%20SOLISTI%20-%20J.%20De%20Caro.mp3"
+			},
+			{
+			  "title": "Gelosia",
+			  "url": "https://archive.org/download/78_gelosia_kramer-e-i-suoi-solisti-gade_gbia3020661a/GELOSIA%20-%20KRAMER%20E%20I%20SUOI%20SOLISTI%20-%20Gade.mp3"
+			},
+			{
+			  "title": "Tango of Love",
+			  "url": "https://archive.org/download/78_tango-of-love_henri-ren-and-his-tango-orchestra-td-e-costello_gbia0328138a/TANGO%20OF%20LOVE%20-%20HENRI%20REN%C3%89%20and%20his%20Tango%20Orchestra.mp3"
+			},
+			{
+			  "title": "Buscándote",
+			  "url": "https://archive.org/download/Elkintangohomework/Busc%C3%A1ndote%20-%20Osvaldo%20Fresedo%20&%20Ricardo%20Ruiz%20-%20Tango.mp3"
+			},
+			{
+			  "title": "El Acomodo",
+			  "url": "https://archive.org/download/Elkintangohomework/06%20Edgardo%20Donato%20-%20El%20Acomodo.mp3"
+			},
+			{
+			  "title": "Al compás del corazón",
+			  "url": "https://archive.org/download/Elkintangohomework/09%20Al%20comp%C3%A1s%20del%20coraz%C3%B3n%20-%20Miguel%20Cal%C3%B3%20c.%20Ra%C3%BAl%20Ber%C3%B3n%20(1942).mp3"
+			}
+		  ]
+		}
+		
+		
+		
+		
+		
+		
+		
         const danceTypesSelect = document.getElementById("danceTypes");
         const rolesSelect = document.getElementById("roles");
         const cycleMovesCheckbox = document.getElementById("cycleMoves");
@@ -203,6 +302,10 @@
 		const autoDrillSettings = document.getElementById("autoDrillSettings");
 		const autoDrillPauseToggle = document.getElementById("autoDrillPauseToggle");
 		const autoDrillSecondsLeft = document.getElementById("autoDrillSecondsLeft");
+		const playMusicCheckbox = document.getElementById("playMusicCheckbox");
+		const currentSongTitle = document.getElementById("currentSongTitle");
+		
+
 
         // Load saved settings from local storage
         window.onload = function() {
@@ -263,6 +366,17 @@
 				synth.cancel();
 			}
 			saveSettings();
+		});
+
+		playMusicCheckbox.addEventListener('change', function () {
+			const danceType = currentSongDanceType;
+			if (this.checked) {
+				playMusic(danceType);
+			} else {
+				audio.pause();
+				currentSongTitle.textContent = '';
+				currentSong = null;
+			}
 		});
 
 
@@ -404,6 +518,14 @@
 			if (enableVoiceCheckbox.checked) {
                 narrateMove(danceType, danceMove, role); // Call the voice narration function
             }
+			
+			// Check if music should be played
+			if (playMusicCheckbox.checked) {
+				playMusic(danceType);
+			}
+			
+			
+			
         }
 
         function getRole() {
@@ -543,6 +665,35 @@
 			utterance.rate=1.3;
             speechSynthesis.speak(utterance);
         }
+		
+		
+		function playMusic(danceType) {
+			if (!musicList[danceType]) return;
+
+			//dont start playing new music if that genre is already playing
+			if (currentSongDanceType == danceType && currentSong) return; 
+
+			currentSongDanceType = danceType		
+
+			// Stop the current song if it's playing
+			if (currentSong) {
+				audio.pause();
+			}
+
+			// Get a random song from the selected dance type
+			const songs = musicList[danceType];
+			currentSong = songs[Math.floor(Math.random() * songs.length)];
+
+			audio.src = currentSong.url;
+			audio.play();
+			document.getElementById('currentSongTitle').textContent = `Now Playing: ${currentSong.title}`;
+
+			// When the song ends, play the next song
+			audio.onended = () => playMusic(danceType);
+		}
+		
+		
+		
 		
     </script>
 </body>
