@@ -99,9 +99,10 @@
 
     <label for="roles">Select Role:</label><br>
     <select id="roles">
-        <option value="Both">Both</option>
+        <option value="None">Don't Specifty</option>
         <option value="Lead">Lead</option>
         <option value="Follow">Follow</option>
+		<option value="Both">Both</option>
     </select><br><br>
 
     <label>
@@ -120,8 +121,9 @@
         <label for="autoDrillSlider">Auto Drill Interval:</label><br>
         <input type="range" id="autoDrillSlider" min="1" max="60" value="5">
         <span id="sliderValue">5</span> seconds
+		<br>
 		<button id="autoDrillPauseToggle">⏸</button>
-		<span id="autoDrillSecondsLeft">5.</span> sec Left
+		<span id="autoDrillSecondsLeft">5</span>s <i>untill next move</i>
     </div><br>
 
 	
@@ -384,10 +386,14 @@
             danceStyleElement.textContent = danceType;
             danceMoveElement.textContent = danceMove;
             roleElement.textContent = role;
-            roleImageElement.innerHTML = `
-                <img src="${role === "Lead" ? 'LeadDancerSilhouette.png' : 'FollowDancerSilhouette.png'}" 
-                style="height: 250px; filter: drop-shadow(0 0 10px ${role === "Lead" ? "blue" : "red"})">
-            `;
+			if (role == ""){
+				roleImageElement.innerHTML = "";	
+			}else{
+				roleImageElement.innerHTML = `
+					<img src="${role === "Lead" ? 'LeadDancerSilhouette.png' : 'FollowDancerSilhouette.png'}" 
+					style="height: 250px; filter: drop-shadow(0 0 10px ${role === "Lead" ? "blue" : "red"})">
+				`;
+			}
 
             updateProgressText(); // Update the progress text after generating a move
 			
@@ -412,6 +418,8 @@
                         remainingMoves.push({ move, type, role: "Lead" });
                     } else if (rolesSelect.value === "Follow") {
                         remainingMoves.push({ move, type, role: "Follow" });
+					} else if (rolesSelect.value === "None") {
+                        remainingMoves.push({ move, type, role: "" });
                     } else { // Both
                         remainingMoves.push({ move, type, role: "Lead" });
                         remainingMoves.push({ move, type, role: "Follow" });
@@ -464,7 +472,7 @@
             if (selectedDanceTypes.length) {
                 totalMoves = selectedDanceTypes.reduce((acc, type) => {
                     const movesCount = danceMoves[type].length;
-                    if (selectedRole === 'Lead' || selectedRole === 'Follow') {
+                    if (selectedRole === 'Lead' || selectedRole === 'Follow' || selectedRole === 'None') {
                         return acc + movesCount; // Only count one role's set of moves
                     } else {
                         return acc + (movesCount * 2); // Count both roles' moves
