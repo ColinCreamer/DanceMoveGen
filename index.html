@@ -81,6 +81,12 @@
 			text-align: center;
 		}
 		
+		#musicControlSettings {
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+        }
+
+		
     </style>
 </head>
 <body>
@@ -141,8 +147,19 @@
 		Play music
 	</label>
 	
-	<div id="currentSongTitle"></div>
+	<div id="musicControlSettings">
+		<div id="currentSongTitle"></div>
 	
+		<button id="musicPauseButton" onclick="toggleMusicPause()">⏸</button>
+		<button onclick="playNextSong()">⏭ Next</button>
+		
+		<label for="bpmRange">BPM Range:</label>
+		<input type="range" id="minBPM" min="60" max="200" step="1" value="60" oninput="updateBPMRange()">
+		<input type="range" id="maxBPM" min="60" max="200" step="1" value="200" oninput="updateBPMRange()">
+		<span id="bpmRangeDisplay">60 - 200 BPM</span>
+		
+		
+	</div>
 
 
     <div id="danceStyle"></div>
@@ -217,65 +234,111 @@
 			{
 			  "title": "Tales From Vienna Woods",
 			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.01.%20Tales%20From%20Vienna%20Woods.mp3"
+			  ,"startTime": 3.717
+			  ,"bpm": 200 //87, 66  (Beat counter 174)tap180-200
 			},
 			{
 			  "title": "Blue Danube",
 			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.02.%20Blue%20Danube.mp3"
+				,"startTime": 1.676
+				,"bpm": 200//68 //99 //tap 199
 			},
 			{
 			  "title": "Artists Life",
 			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.03.%20Artists%20Life.mp3"
+				,"startTime": 2.089
+				,"bpm": 190//66 //Tap190
 			},
 			{
 			  "title": "Acceleration Waltz",
 			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.04.%20Acceleration%20Waltz.mp3"
+				,"startTime": 1.181
+				,"bpm": 214//112 //Tap214
 			},
 			{
 			  "title": "Wine, Women And Song",
 			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F01.05.%20Wine%2C%20Women%20And%20Song.mp3"
+				,"startTime": 3.22
+				,"bpm": 180//106 //Tap180
 			},
 			{
 			  "title": "Voices Of Spring",
 			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F02.01.%20Voices%20Of%20Spring.mp3"
+				,"startTime": 3.951
+				,"bpm": 209//69 tap209
 			},
 			{
 			  "title": "Die Fliedermause (The Bat)",
 			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F02.03.%20Die%20Fliedermause%20%28The%20Bat%29.mp3"
+				,"startTime": 2.902
+				,"bpm": '180-220' //tap 188-220
 			},
 			{
 			  "title": "Emperor Waltz",
 			  "url": "https://archive.org/download/lp_original-johann-strauss-waltzes_johann-strauss-jr-the-danube-strings_0/disc1%2F02.04.%20Emperor%20Waltz.mp3"
+				,"startTime": 2.972
+				,"bpm": '150-220' //tap 150-220
+			},
+			{
+			  "title": "Honolulu Moon (Luna Honolulu)",
+			  "url": "https://archive.org/download/78_honolulu-moon-luna-honolulu_society-night-club-orchestra-fred-lawrence_gbia0096071a/Honolulu%20Moon%20%28Luna%20Honolulu%29%20-%20Society%20Night%20Club%20Orchestra.mp3"
+				,"startTime": 4.45
+				,"bpm": 130 //tap 130-137
+			},
+			{
+			  "title": "The One Rose",
+			  "url": "https://archive.org/download/78_the-one-rose_jay-balls-kona-hawaiians_gbia0000300a/The%20One%20Rose%20-%20Jay%20Ball%27s%20Kona%20Hawaiians.mp3"
+				,"startTime": 3.59
+				,"bpm": 90 //tap 90
 			}
 		  ],
 		  "Tango": [
 			{
 			  "title": "Por Una Cabeza",
 			  "url": "https://archive.org/download/CarlosGardelPorUnaCabeza/Carlos-Gardel-Por-una-cabeza.mp3"
+				,"startTime": 0.18
+				,"bpm": 120//60 //tap 120
 			},
 			{
 			  "title": "El Malevo",
 			  "url": "https://archive.org/download/78_el-malevo_kramer-e-i-suoi-solisti-j-de-caro_gbia3020658a/EL%20MALEVO%20-%20KRAMER%20E%20I%20SUOI%20SOLISTI%20-%20J.%20De%20Caro.mp3"
+				,"startTime": 5.657
+				,"bpm": 111 //tap109
 			},
 			{
 			  "title": "Gelosia",
 			  "url": "https://archive.org/download/78_gelosia_kramer-e-i-suoi-solisti-gade_gbia3020661a/GELOSIA%20-%20KRAMER%20E%20I%20SUOI%20SOLISTI%20-%20Gade.mp3"
+				,"startTime": 4.571
+				,"bpm": 115 //tap117
 			},
 			{
 			  "title": "Tango of Love",
 			  "url": "https://archive.org/download/78_tango-of-love_henri-ren-and-his-tango-orchestra-td-e-costello_gbia0328138a/TANGO%20OF%20LOVE%20-%20HENRI%20REN%C3%89%20and%20his%20Tango%20Orchestra.mp3"
+				,"startTime": 3.103
+				,"bpm": 115 //tap115
 			},
 			{
 			  "title": "Buscándote",
 			  "url": "https://archive.org/download/Elkintangohomework/Busc%C3%A1ndote%20-%20Osvaldo%20Fresedo%20&%20Ricardo%20Ruiz%20-%20Tango.mp3"
+				,"startTime": 1.125
+				,"bpm": 123   //tap125
 			},
 			{
 			  "title": "El Acomodo",
 			  "url": "https://archive.org/download/Elkintangohomework/06%20Edgardo%20Donato%20-%20El%20Acomodo.mp3"
+				,"startTime": 0.212
+				,"bpm": 133 //tap135
 			},
 			{
 			  "title": "Al compás del corazón",
 			  "url": "https://archive.org/download/Elkintangohomework/09%20Al%20comp%C3%A1s%20del%20coraz%C3%B3n%20-%20Miguel%20Cal%C3%B3%20c.%20Ra%C3%BAl%20Ber%C3%B3n%20(1942).mp3"
+				,"startTime": 0.419
+				,"bpm": 119 //tap123
 			}
+			
+			
+			
+			
 		  ],
 		  "Rhumba": [
 			{
@@ -307,7 +370,15 @@
 			{
 			  "title": "Stormy Weather",
 			  "url": "https://archive.org/download/78_stormy-weather_leo-mathisens-band-helge-jacobsen-koehler-arlen_gbia7026217a/STORMY%20WEATHER%20-%20LEO%20MATHISEN%27S%20BAND%20-%20HELGE%20JACOBSEN.mp3"
+			},
+			{
+			  "title": "BLUE ORCHIDS",
+			  "url": "https://archive.org/download/78_blue-orchids_victor-silvester-his-ballroom-orchestra-carmichael_gbia3002095b/BLUE%20ORCHIDS%20-%20VICTOR%20SILVESTER%20%26%20HIS%20BALLROOM%20ORCHESTRA.mp3"
+				,"startTime": 3.212
+				,"bpm": 93 //tap93
 			}
+			
+			
 		  ],
 		  "Cha-Cha": [
 			{
@@ -392,7 +463,8 @@
 		const autoDrillSecondsLeft = document.getElementById("autoDrillSecondsLeft");
 		const playMusicCheckbox = document.getElementById("playMusicCheckbox");
 		const currentSongTitle = document.getElementById("currentSongTitle");
-		
+		const musicPauseButton = document.getElementById('musicPauseButton');
+		const musicControlSettings = document.getElementById('musicControlSettings');
 
 
         // Load saved settings from local storage
@@ -464,9 +536,11 @@
 			const danceType = currentSongDanceType;
 			if (this.checked) {
 				playMusic(danceType);
+				musicControlSettings.style.display = 'block';
 			} else {
 				audio.pause();
 				currentSongTitle.textContent = '';
+				musicControlSettings.style.display = 'none';
 				currentSong = null;
 			}
 			saveSettings();
@@ -776,16 +850,85 @@
 
 			// Get a random song from the selected dance type
 			const songs = musicList[danceType];
-			currentSong = songs[Math.floor(Math.random() * songs.length)];
+			
+
+			const filteredSongsByBpmRange = songs.filter(song => {
+				return song.bpm >= minBPM && song.bpm <= maxBPM;
+			});
+
+																		//document.getElementById('minBPM').min
+			const anyBPMRangeAllowed = (minBPM == 60 && maxBPM == 200);
+
+			if (anyBPMRangeAllowed){
+				currentSong = songs[Math.floor(Math.random() * songs.length)];
+			}else{
+			
+				if (filteredSongsByBpmRange.length > 0 ) {
+					//Pick random song from songs that match the desired BPM range
+					currentSong = filteredSongsByBpmRange[Math.floor(Math.random() * filteredSongsByBpmRange.length)];
+				} else {
+					console.log("No songs within the specified BPM range.");
+					//Just pick a random song normaly without the BPM filter
+					currentSong = songs[Math.floor(Math.random() * songs.length)];
+				}
+			
+			}
+
+
+
+
 
 			audio.src = currentSong.url;
-			audio.play();
-			document.getElementById('currentSongTitle').textContent = `Now Playing: ${currentSong.title}`;
+			audio.currentTime = currentSong.startTime || 0; // Default to 0 if no startTime is specified
+			if (!isMusicPaused){
+				audio.play();
+			}
+			
+			let displaySongTitle = `Now Playing: ${currentSong.title}`;
+			// Check if BPM is specified and append it in brackets
+			if (currentSong.bpm) {
+				displaySongTitle += ` (${currentSong.bpm} BPM)`;
+			}
+			
+			currentSongTitle.textContent = displaySongTitle;
 
 			// When the song ends, play the next song
 			audio.onended = () => playMusic(danceType);
 		}
 		
+		function playNextSong() {
+		
+			let danceType = currentSongDanceType;	
+			currentSongDanceType = null;			//Sets to null so play music function will let us start a new song
+		
+		  playMusic(danceType);
+		}
+		
+		
+		
+		let isMusicPaused = false;
+
+		function toggleMusicPause() {
+			if (isMusicPaused) {
+				audio.play();
+				musicPauseButton.textContent = '⏸';
+			} else {
+				audio.pause();
+				musicPauseButton.textContent = '⏵';
+			}
+			isMusicPaused = !isMusicPaused;
+		}
+		
+		
+		
+		let minBPM = 60;
+		let maxBPM = 200;
+
+		function updateBPMRange() {
+			minBPM = parseInt(document.getElementById('minBPM').value);
+			maxBPM = parseInt(document.getElementById('maxBPM').value);
+			document.getElementById('bpmRangeDisplay').textContent = `${minBPM} - ${maxBPM} BPM`;
+		}
 		
 		
 		
