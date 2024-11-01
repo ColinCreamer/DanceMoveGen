@@ -154,9 +154,9 @@
 		<button onclick="playNextSong()">⏭ Next</button>
 		
 		<label for="bpmRange">BPM Range:</label>
-		<input type="range" id="minBPM" min="60" max="200" step="1" value="60" oninput="updateBPMRange()">
-		<input type="range" id="maxBPM" min="60" max="200" step="1" value="200" oninput="updateBPMRange()">
-		<span id="bpmRangeDisplay">60 - 200 BPM</span>
+		<input type="range" id="minBPM" min="60" max="230" step="1" value="60" oninput="updateBPMRange()">
+		<input type="range" id="maxBPM" min="60" max="230" step="1" value="230" oninput="updateBPMRange()">
+		<span id="bpmRangeDisplay">60 - 230 BPM</span>
 		
 		
 	</div>
@@ -227,7 +227,7 @@
 		let currentSongDanceType = null;
 		let audio = new Audio();
 
-
+		//used https://www.beatsperminuteonline.com/ to manauly time the BPMs for the songs by tapping the beat/count with a button
 		
 		let musicList = {
 		  "Waltz": [
@@ -344,32 +344,46 @@
 			{
 			  "title": "Cuatro Personas",
 			  "url": "https://archive.org/download/78_cuban-rhythms_hotel-nacional-orchestra-beltran_gbia0002479/Cuatro%20Personas%20-%20Hotel%20Nacional%20Orchestra-restored.mp3"
+				,"startTime": 0.33
+				,"bpm": 185 //tap185
 			},
 			{
 			  "title": "Dulce Desengano",
 			  "url": "https://archive.org/download/78_cuban-rhythms_hotel-nacional-orchestra-beltran_gbia0002479/Dulce%20Desengano%20-%20Hotel%20Nacional%20Orchestra-restored.mp3"
+				,"startTime": 0.399
+				,"bpm": 145 //tap145
 			}
 		  ],
 		  "Foxtrot": [
 			{
 			  "title": "Singing in the Rain",
 			  "url": "https://archive.org/download/78_let-a-smile-be-your-umbrella-on-a-rainy-day_murray-kellner-freed-brown_gbia0095027/01%20-%20Singing%20in%20the%20Rain%20-%20Murray%20Kellner%20-%20Freed.mp3"
+				,"startTime": 2.808
+				,"bpm": 153 //tap153
 			},
 			{
 			  "title": "Rain",
 			  "url": "https://archive.org/download/78_let-a-smile-be-your-umbrella-on-a-rainy-day_murray-kellner-freed-brown_gbia0095027/03%20-%20Rain%20-%20Murray%20Kellner%20-%20Eugene%20Ford.mp3"
+				,"startTime": 3.337
+				,"bpm": 125 //tap125
 			},
 			{
 			  "title": "That Get It, Mr. Joe",
 			  "url": "https://archive.org/download/78_that-get-it-mr-joe_fats-waller-and-his-rhythm-fats-waller-james-p-johnson_gbia0100455a/That%20get%20it%2C%20Mr.%20Joe%20-%20%22Fats%22%20Waller%20and%20his%20Rhythm.mp3"
+				,"startTime": 3.516
+				,"bpm": 175 //tap
 			},
 			{
 			  "title": "Hot Spot Blues",
 			  "url": "https://archive.org/download/78_hot-spot-blues_leo-mathisens-orkester-leo-mathisen-erik-parker_gbia7025555a/HOT%20SPOT%20BLUES%20-%20LEO%20MATHISENS%20ORKESTER%20-%20Leo%20Mathisen%20%26%20Erik%20Parker.mp3"
+				,"startTime": 4.067
+				,"bpm": 165 //tap
 			},
 			{
 			  "title": "Stormy Weather",
 			  "url": "https://archive.org/download/78_stormy-weather_leo-mathisens-band-helge-jacobsen-koehler-arlen_gbia7026217a/STORMY%20WEATHER%20-%20LEO%20MATHISEN%27S%20BAND%20-%20HELGE%20JACOBSEN.mp3"
+				,"startTime": 4.767
+				,"bpm": 95 //tap
 			},
 			{
 			  "title": "BLUE ORCHIDS",
@@ -384,56 +398,82 @@
 			{
 			  "title": "Baila Mi Chacha Cha",
 			  "url": "https://archive.org/download/78_baila-mi-chacha-cha_tito-puente-and-his-orchestra-e-duarte_gbia0101009b/Baila%20Mi%20Chacha%20Cha%20-%20Tito%20Puente%20and%20His%20Orchestra.mp3"
+				,"startTime": 4.153
+				,"bpm": 126 //tap
 			},
 			{
 			  "title": "Dansero",
 			  "url": "https://archive.org/download/lp_mambo_perez-prado-and-his-orchestra-tito-rodr/disc1%2F01.02.%20Dansero.mp3"
+				,"startTime": 2.133
+				,"bpm": 132 //tap
 			},
 			{
 			  "title": "Azuquito Con Leche",
 			  "url": "https://archive.org/download/lp_mambo_perez-prado-and-his-orchestra-tito-rodr/disc1%2F01.03.%20Azuquito%20Con%20Leche.mp3"
+				,"startTime": 2.312
+				,"bpm": 142 //tap
 			},
 			{
 			  "title": "Harvest Moon Cha Cha",
 			  "url": "https://archive.org/download/lp_cha-cha-festival_perez-prado-and-his-orchestra-pepito-pavon/disc1%2F01.03.%20Harvest%20Moon%20Cha%20Cha.mp3"
+				,"startTime": 2.493
+				,"bpm": 138 //tap
 			}
 		  ],
 		  "East Coast Swing": [
 			{
 			  "title": "A String Of Pearls",
 			  "url": "https://archive.org/download/lp_the-swing-era-the-music-of-1941-1942-sw_various_0/disc1%2F01.01.%20A%20String%20Of%20Pearls%20%28Glenn%20Miller%20Version%29.mp3"
+				,"startTime": 3.047
+				,"bpm": 155 //tap
 			},
 			{
 			  "title": "Don't Sit Under The Apple Tree",
 			  "url": "https://archive.org/download/lp_the-swing-era-the-music-of-1941-1942-sw_various_0/disc1%2F01.02.%20Don%27t%20Sit%20Under%20The%20Apple%20Tree%20%28Glenn%20Miller%20Version%29.mp3"
+				,"startTime": 1.952
+				,"bpm": 185 //tap
 			},
 			{
 			  "title": "Swing Low, Sweet Chariot",
 			  "url": "https://archive.org/download/lp_the-swing-era-the-music-of-1941-1942-sw_various_0/disc1%2F01.04.%20Swing%20Low%2C%20Sweet%20Chariot%20%28Tommy%20Dorsey%20Version%29.mp3"
+				,"startTime": 1.514
+				,"bpm": 134 //tap
 			},
 			{
 			  "title": "Flying Home",
 			  "url": "https://archive.org/download/lp_the-swing-era-the-music-of-1941-1942-sw_various_0/disc1%2F01.05.%20Flying%20Home%20%28Lionel%20Hampton%20Version%29.mp3"
+				,"startTime": 2.119
+				,"bpm": 185 //tap
 			},
 			{
 			  "title": "Jersey Bounce",
 			  "url": "https://archive.org/download/lp_the-swing-era-the-music-of-1941-1942-sw_various_0/disc1%2F02.01.%20Jersey%20Bounce%20%28Benny%20Goodman%20Version%29.mp3"
+				,"startTime": 2.442
+				,"bpm": 130 //tap
 			},
 			{
 			  "title": "Basie Boogie",
 			  "url": "https://archive.org/download/lp_the-swing-era-the-music-of-1941-1942-sw_various_0/disc1%2F02.03.%20Basie%20Boogie%20%28Count%20Basie%20Version%29.mp3"
+				,"startTime": 1.345
+				,"bpm": 173 //tap
 			},
 			{
 			  "title": "Charleston Alley",
 			  "url": "https://archive.org/download/lp_the-swing-era-the-music-of-1941-1942-sw_various_0/disc1%2F02.04.%20Charleston%20Alley%20%28Charley%20Barnet%20Version%29.mp3"
+				,"startTime": 2.278
+				,"bpm": 156 //tap			
 			},
 			{
 			  "title": "Air Mail Special",
 			  "url": "https://archive.org/download/lp_the-swing-era-the-music-of-1941-1942-sw_various_0/disc1%2F02.05.%20Air%20Mail%20Special%20%28Benny%20Goodman%20Version%29.mp3"
+				,"startTime": 2.219
+				,"bpm": 230 //tap
 			},
 			{
 			  "title": "9:20 Special",
 			  "url": "https://archive.org/download/lp_the-swing-era-the-music-of-1941-1942-sw_various_0/disc2%2F03.01.%209%3A20%20Special%20%28Count%20Basie%20Version%29.mp3"
+				,"startTime": 1.822
+				,"bpm": 194 //tap
 			}
 		  ]
 		}
@@ -857,7 +897,7 @@
 			});
 
 																		//document.getElementById('minBPM').min
-			const anyBPMRangeAllowed = (minBPM == 60 && maxBPM == 200);
+			const anyBPMRangeAllowed = (minBPM == 60 && maxBPM == 230);
 
 			if (anyBPMRangeAllowed){
 				currentSong = songs[Math.floor(Math.random() * songs.length)];
@@ -922,7 +962,7 @@
 		
 		
 		let minBPM = 60;
-		let maxBPM = 200;
+		let maxBPM = 230;
 
 		function updateBPMRange() {
 			minBPM = parseInt(document.getElementById('minBPM').value);
