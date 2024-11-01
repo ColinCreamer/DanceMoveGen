@@ -81,6 +81,12 @@
 			text-align: center;
 		}
 		
+		
+		.smallBtn{
+			padding: 2px;
+			text-align: center;
+		}
+		
 		#musicControlSettings {
             margin-top: 20px;
             display: none; /* Initially hidden */
@@ -169,18 +175,12 @@
 	<div id="currentSongTitle"></div>
 	<div id="musicControlSettings">
 		
-		<button id="musicPauseButton" onclick="toggleMusicPause()">⏸</button>
-		<button onclick="playNextSong()">⏭ Next</button>
+		<button id="musicPauseButton" class="smallBtn" onclick="toggleMusicPause()">⏸</button>
+		<button onclick="playNextSong()"  class="smallBtn" alt="Next">⏭</button>
 		
 		
-		<label for="bpmRangeSlider">BPM Range: </label>
+		<label for="bpmRangeSlider" title="BPM Range Filter. Only songs that are within the BPM tempo range will be played if avaialble.">BPM: </label>
 		<div id="bpmRangeSlider"></div>
-		
-		
-		<!-- 
-		<input type="range" id="minBPM" min="60" max="230" step="1" value="60" oninput="updateBPMRange()">
-		<input type="range" id="maxBPM" min="60" max="230" step="1" value="230" oninput="updateBPMRange()">
-		-->
 		<span id="bpmRangeDisplay">60 - 230 BPM</span>
 		
 		
@@ -315,7 +315,40 @@
 			  "url": "https://archive.org/download/78_the-one-rose_jay-balls-kona-hawaiians_gbia0000300a/The%20One%20Rose%20-%20Jay%20Ball%27s%20Kona%20Hawaiians.mp3"
 				,"startTime": 3.59
 				,"bpm": 90 //tap 90
+			},
+			{	//very quiet volume
+			  "title": "YOU'RE IN LOVE",
+			  "url": "https://ia601307.us.archive.org/28/items/78_youre-in-love_lou-preager-his-orchestra-paul-rich-de-murcia-penrose-kerbel_gbia3029982a/YOU%27RE%20IN%20LOVE%20-%20LOU%20PREAGER%20%26%20HIS%20ORCHESTRA.mp3"
+				,"startTime": 5.245
+				,"bpm": 101 //tap 
+			},
+			{	
+			  "title": "WALTZ MEDLEY-SLOW SIDE",
+			  "url": "https://ia601307.us.archive.org/28/items/78_youre-in-love_lou-preager-his-orchestra-paul-rich-de-murcia-penrose-kerbel_gbia3029982a/YOU%27RE%20IN%20LOVE%20-%20LOU%20PREAGER%20%26%20HIS%20ORCHESTRA.mp3"
+				,"startTime": 4.838
+				,"bpm": 112 //tap 
+			},
+			{	
+			  "title": "WALTZ MEDLEY-FAST SIDE",
+			  "url": "https://archive.org/download/78_waltz-medley-fast-side_ivor-moreton-and-dave-kaye_gbia3040580b/WALTZ%20MEDLEY-FAST%20SIDE%20-%20IVOR%20MORETON%20and%20DAVE%20KAYE.mp3"
+				,"startTime": 4.693
+				,"bpm": 180 //tap 
+			},
+			{	
+			  "title": "Chop Sticks",
+			  "url": "https://archive.org/download/78_chop-sticks_gbia0437172b/CHOP%20STICKS.mp3"
+				,"startTime": 2.847
+				,"bpm": 130 //tap 
+			},
+			{	
+			  "title": "LOLITA (Zwei weisse Moeven)",
+			  "url": "https://archive.org/download/78_chop-sticks_gbia0437172b/CHOP%20STICKS.mp3"
+				,"startTime": 2.318
+				,"bpm": 100 //tap 
 			}
+			
+			
+			
 		  ],
 		  "Tango": [
 			{
@@ -990,13 +1023,6 @@
 		
 		let minBpmVal = 60;
 		let maxBpmVal = 230;
-
-		/*function updateBPMRange() {
-			minBpmVal = parseInt(document.getElementById('minBPM').value);
-			maxBpmVal = parseInt(document.getElementById('maxBPM').value);
-			document.getElementById('bpmRangeDisplay').textContent = `${minBpmVal} - ${maxBpmVal} BPM`;
-		}*/
-		
 		
 		noUiSlider.create(document.getElementById("bpmRangeSlider"), {
 			start: [60, 230],
@@ -1006,7 +1032,7 @@
 				min: 60,
 				max: 230
 			},
-				step: 1,
+				step: 5,
 				format: {
 				to: value => Math.round(value),
 				from: value => Math.round(value)
@@ -1014,7 +1040,7 @@
 			    // Show a scale with the slider
 			pips: {
 				mode: 'count',
-				values: 6
+				values: 4
 			}
 		});
 
