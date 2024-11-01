@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Dance Move Selector - v34</title>
+    <title>Random Dance Move Selector - v35</title>
     <style>
-        /* Version 34 */
+        /* Version 35 */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -84,14 +84,33 @@
 		#musicControlSettings {
             margin-top: 20px;
             display: none; /* Initially hidden */
+			
+			/*display: flex;*/
+			align-items: center;
+			justify-content: center;
+			gap: 10px; /* Add space between elements */
+			
         }
+
+		#bpmRangeSlider{
+			width : 300px;
+			margin:10px;
+			/*align-items: center;*/
+		}
 
 		
     </style>
+	
+	<!--noUiSlider-->
+	<!-- Gives us a multi point ranged slider-->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.css" integrity="sha512-MKxcSu/LDtbIYHBNAWUQwfB3iVoG9xeMCm32QV5hZ/9lFaQZJVaXfz9aFa0IZExWzCpm7OWvp9zq9gVip/nLMg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" integrity="sha512-g/feAizmeiVKSwvfW0Xk3ZHZqv5Zs8PEXEBKzL15pM0SevEvoX8eJ4yFWbqakvRj7vtw1Q97bLzEpG2IVWX0Mg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	
+	
 </head>
 <body>
 
-    <h1>Random Dance Move Selector - v34</h1>
+    <h1>Random Dance Move Selector - v35</h1>
 
     <label for="danceTypes">Select Dance Styles:</label><br>
     <select id="danceTypes" multiple size="6">
@@ -147,21 +166,27 @@
 		Play music
 	</label>
 	
+	<div id="currentSongTitle"></div>
 	<div id="musicControlSettings">
-		<div id="currentSongTitle"></div>
-	
+		
 		<button id="musicPauseButton" onclick="toggleMusicPause()">⏸</button>
 		<button onclick="playNextSong()">⏭ Next</button>
 		
-		<label for="bpmRange">BPM Range:</label>
+		
+		<label for="bpmRangeSlider">BPM Range: </label>
+		<div id="bpmRangeSlider"></div>
+		
+		
+		<!-- 
 		<input type="range" id="minBPM" min="60" max="230" step="1" value="60" oninput="updateBPMRange()">
 		<input type="range" id="maxBPM" min="60" max="230" step="1" value="230" oninput="updateBPMRange()">
+		-->
 		<span id="bpmRangeDisplay">60 - 230 BPM</span>
 		
 		
 	</div>
 
-
+	<br>
     <div id="danceStyle"></div>
     <div id="danceMove"></div>
     <div id="role"></div>
@@ -540,8 +565,8 @@
             sliderValueDisplay.textContent = autoDrillSlider.value;
 			autoDrillSecondsLeft.textContent = autoDrillSlider.value;
 			
-			const playMusicSetting = localStorage.getItem('playMusic');
-            playMusicCheckbox.checked = playMusicSetting === 'true';
+			//const playMusicSetting = localStorage.getItem('playMusic');
+            //playMusicCheckbox.checked = playMusicSetting === 'true';
 			
 
             toggleAutoDrillSettings();
@@ -576,11 +601,11 @@
 			const danceType = currentSongDanceType;
 			if (this.checked) {
 				playMusic(danceType);
-				musicControlSettings.style.display = 'block';
+				musicControlSettings.style.display = 'flex'; //show   'block'
 			} else {
 				audio.pause();
 				currentSongTitle.textContent = '';
-				musicControlSettings.style.display = 'none';
+				musicControlSettings.style.display = 'none';//hide
 				currentSong = null;
 			}
 			saveSettings();
@@ -651,8 +676,10 @@
 		
 		// Add event listener for clicks on the body, excluding the buttons and UI elements
         document.body.addEventListener('click', function(event) {
-            const ignoredElements = ['BUTTON', 'SELECT', 'OPTION', 'INPUT', 'LABEL'];
-            if (!ignoredElements.includes(event.target.tagName)) {
+            const ignoredElements = ['BUTTON', 'SELECT', 'OPTION', 'INPUT', 'LABEL', "#bpmRangeSlider"];
+            if (!ignoredElements.includes(event.target.tagName) &&
+				!bpmRangeSlider.contains(event.target) // Ignore clicks inside the noUiSlider div
+			) {
 				if (!autoDrillCheckbox.checked) {
 					generateDanceMove();
 				}
@@ -893,11 +920,11 @@
 			
 
 			const filteredSongsByBpmRange = songs.filter(song => {
-				return song.bpm >= minBPM && song.bpm <= maxBPM;
+				return song.bpm >= minBpmVal && song.bpm <= maxBpmVal;
 			});
 
-																		//document.getElementById('minBPM').min
-			const anyBPMRangeAllowed = (minBPM == 60 && maxBPM == 230);
+																		//document.getElementById('minBpmVal').min
+			const anyBPMRangeAllowed = (minBpmVal == 60 && maxBpmVal == 230);
 
 			if (anyBPMRangeAllowed){
 				currentSong = songs[Math.floor(Math.random() * songs.length)];
@@ -961,14 +988,43 @@
 		
 		
 		
-		let minBPM = 60;
-		let maxBPM = 230;
+		let minBpmVal = 60;
+		let maxBpmVal = 230;
 
-		function updateBPMRange() {
-			minBPM = parseInt(document.getElementById('minBPM').value);
-			maxBPM = parseInt(document.getElementById('maxBPM').value);
-			document.getElementById('bpmRangeDisplay').textContent = `${minBPM} - ${maxBPM} BPM`;
-		}
+		/*function updateBPMRange() {
+			minBpmVal = parseInt(document.getElementById('minBPM').value);
+			maxBpmVal = parseInt(document.getElementById('maxBPM').value);
+			document.getElementById('bpmRangeDisplay').textContent = `${minBpmVal} - ${maxBpmVal} BPM`;
+		}*/
+		
+		
+		noUiSlider.create(document.getElementById("bpmRangeSlider"), {
+			start: [60, 230],
+			tooltips: [true, true],
+			connect: true,
+			range: {
+				min: 60,
+				max: 230
+			},
+				step: 1,
+				format: {
+				to: value => Math.round(value),
+				from: value => Math.round(value)
+			},
+			    // Show a scale with the slider
+			pips: {
+				mode: 'count',
+				values: 6
+			}
+		});
+
+		// Event listener to update BPM range
+		document.getElementById("bpmRangeSlider").noUiSlider.on('update', function (values, handle) {
+			minBpmVal = parseInt(values[0]);
+			maxBpmVal = parseInt(values[1]);
+			document.getElementById("bpmRangeDisplay").textContent = `${minBpmVal} - ${maxBpmVal} BPM`;
+		});
+		
 		
 		
 		
