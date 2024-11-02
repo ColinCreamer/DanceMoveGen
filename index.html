@@ -65,6 +65,11 @@
             font-size: 16px;
         }
 		
+		#randomCycleLabel{
+			visibility: hidden;	/* Initially hidden */ 
+		}
+		
+		
 		 #autoDrillSettings {
             margin-top: 20px;
             display: none; /* Initially hidden */
@@ -136,12 +141,16 @@
 		<option value="Both">Both</option>
     </select><br><br>
 
-    <label>
-        <input type="checkbox" id="cycleMoves"> Cycle through all selected moves
-    </label><br>
-    <label>
-        <input type="checkbox" id="randomCycle"> Random Order
-    </label><br><br>
+    <label title="Cycle though all of the avaialble moves once before repeating">
+        <input type="checkbox" id="cycleMoves" > Cycle All Moves
+    </label>
+	
+    <label id="randomCycleLabel" title="Cycle though moves in a random order">
+		<input type="checkbox" id="randomCycle"> Random Order
+	</label>
+	
+	
+	<br><br>
 	
 	
 	<label>
@@ -153,7 +162,7 @@
         <input type="range" id="autoDrillSlider" min="1" max="60" value="5">
         <span id="sliderValue">5</span> seconds
 		<br>
-		<button id="autoDrillPauseToggle">⏸</button>
+		<button id="autoDrillPauseToggle" title="Pause/Resume Drill Timmer">⏸</button>
 		<span id="autoDrillSecondsLeft">5</span>s <i>untill next move</i>
     </div><br>
 
@@ -175,8 +184,8 @@
 	<div id="currentSongTitle"></div>
 	<div id="musicControlSettings">
 		
-		<button id="musicPauseButton" class="smallBtn" onclick="toggleMusicPause()">⏸</button>
-		<button onclick="playNextSong()"  class="smallBtn" alt="Next">⏭</button>
+		<button id="musicPauseButton" title="Pause/Resume Music Track" class="smallBtn" onclick="toggleMusicPause()">⏸</button>
+		<button onclick="playNextSong()" title="Skip to next Music Track"  class="smallBtn" alt="Next">⏭</button>
 		
 		
 		<label for="bpmRangeSlider" title="BPM Range Filter. Only songs that are within the BPM tempo range will be played if avaialble.">BPM: </label>
@@ -324,7 +333,7 @@
 			},
 			{	
 			  "title": "WALTZ MEDLEY-SLOW SIDE",
-			  "url": "https://ia601307.us.archive.org/28/items/78_youre-in-love_lou-preager-his-orchestra-paul-rich-de-murcia-penrose-kerbel_gbia3029982a/YOU%27RE%20IN%20LOVE%20-%20LOU%20PREAGER%20%26%20HIS%20ORCHESTRA.mp3"
+			  "url": "https://archive.org/download/78_waltz-medley-slow-side_ivor-moreton-and-dave-kaye_gbia3040580a/WALTZ%20MEDLEY-SLOW%20SIDE%20-%20IVOR%20MORETON%20and%20DAVE%20KAYE.mp3"
 				,"startTime": 4.838
 				,"bpm": 112 //tap 
 			},
@@ -339,14 +348,25 @@
 			  "url": "https://archive.org/download/78_chop-sticks_gbia0437172b/CHOP%20STICKS.mp3"
 				,"startTime": 2.847
 				,"bpm": 130 //tap 
+				,"year": 1877
 			},
 			{	
 			  "title": "LOLITA (Zwei weisse Moeven)",
-			  "url": "https://archive.org/download/78_chop-sticks_gbia0437172b/CHOP%20STICKS.mp3"
+			  "url": "https://archive.org/download/78_lolita-zwei-weisse-moeven_peter-hansen-zeissner-spiller-hubert_gbia3027807a/LOLITA%20%28Zwei%20weisse%20Moeven%29%20-%20PETER%20HANSEN.mp3"
 				,"startTime": 2.318
 				,"bpm": 100 //tap 
+				,"year": 1955
+			},
+			{	
+			  "title": "Kukavica Waltz 1379-6",
+			  "url": "https://archive.org/download/78_kukavica-waltz/1379-6.mp3"
+				,"startTime": 0.102
+				,"bpm": 145 //tap
+				,"year":1945
 			}
-			
+
+
+
 			
 			
 		  ],
@@ -356,42 +376,49 @@
 			  "url": "https://archive.org/download/CarlosGardelPorUnaCabeza/Carlos-Gardel-Por-una-cabeza.mp3"
 				,"startTime": 0.18
 				,"bpm": 120//60 //tap 120
+				,"year": 1935
 			},
 			{
 			  "title": "El Malevo",
 			  "url": "https://archive.org/download/78_el-malevo_kramer-e-i-suoi-solisti-j-de-caro_gbia3020658a/EL%20MALEVO%20-%20KRAMER%20E%20I%20SUOI%20SOLISTI%20-%20J.%20De%20Caro.mp3"
 				,"startTime": 5.657
 				,"bpm": 111 //tap109
+				//,"year": "unknown"
 			},
 			{
 			  "title": "Gelosia",
 			  "url": "https://archive.org/download/78_gelosia_kramer-e-i-suoi-solisti-gade_gbia3020661a/GELOSIA%20-%20KRAMER%20E%20I%20SUOI%20SOLISTI%20-%20Gade.mp3"
 				,"startTime": 4.571
 				,"bpm": 115 //tap117
+				,"year": 1925
 			},
 			{
 			  "title": "Tango of Love",
 			  "url": "https://archive.org/download/78_tango-of-love_henri-ren-and-his-tango-orchestra-td-e-costello_gbia0328138a/TANGO%20OF%20LOVE%20-%20HENRI%20REN%C3%89%20and%20his%20Tango%20Orchestra.mp3"
 				,"startTime": 3.103
 				,"bpm": 115 //tap115
+				,"year": 1945
 			},
 			{
 			  "title": "Buscándote",
 			  "url": "https://archive.org/download/Elkintangohomework/Busc%C3%A1ndote%20-%20Osvaldo%20Fresedo%20&%20Ricardo%20Ruiz%20-%20Tango.mp3"
 				,"startTime": 1.125
 				,"bpm": 123   //tap125
+				,"year": 1941
 			},
 			{
 			  "title": "El Acomodo",
 			  "url": "https://archive.org/download/Elkintangohomework/06%20Edgardo%20Donato%20-%20El%20Acomodo.mp3"
 				,"startTime": 0.212
 				,"bpm": 133 //tap135
+				,"year": 1933
 			},
 			{
 			  "title": "Al compás del corazón",
 			  "url": "https://archive.org/download/Elkintangohomework/09%20Al%20comp%C3%A1s%20del%20coraz%C3%B3n%20-%20Miguel%20Cal%C3%B3%20c.%20Ra%C3%BAl%20Ber%C3%B3n%20(1942).mp3"
 				,"startTime": 0.419
 				,"bpm": 119 //tap123
+				,"year": 1942
 			}
 			
 			
@@ -546,6 +573,7 @@
         const rolesSelect = document.getElementById("roles");
         const cycleMovesCheckbox = document.getElementById("cycleMoves");
         const randomCycleCheckbox = document.getElementById("randomCycle");
+		const randomCycleLabel = document.getElementById("randomCycleLabel");
 		const enableVoiceCheckbox = document.getElementById("voiceEnabled");
         const danceStyleElement = document.getElementById("danceStyle");
         const danceMoveElement = document.getElementById("danceMove");
@@ -582,6 +610,7 @@
 
             const cycleMovesSetting = localStorage.getItem('cycleMoves');
             cycleMovesCheckbox.checked = cycleMovesSetting === 'true';
+			randomCycleLabel.style.visibility = cycleMovesCheckbox.checked ? "show" : "hidden"
 
             const randomCycleSetting = localStorage.getItem('randomCycle');
             randomCycleCheckbox.checked = randomCycleSetting === 'true';
@@ -620,7 +649,13 @@
             saveSettings();
         });
 
-        cycleMovesCheckbox.addEventListener('change', saveSettings);
+        cycleMovesCheckbox.addEventListener('change', function() {
+			randomCycleLabel.style.visibility = this.checked ? "visible" : "hidden"
+			saveSettings();
+		});
+		
+		
+		
         randomCycleCheckbox.addEventListener('change', saveSettings);
 		
 		enableVoiceCheckbox.addEventListener('change', function() {
@@ -766,14 +801,14 @@
             danceStyleElement.textContent = danceType;
             danceMoveElement.textContent = danceMove;
             roleElement.textContent = role;
-			if (role == ""){
+			/*if (role == ""){
 				roleImageElement.innerHTML = "";	
-			}else{
+			}else{*/
 				roleImageElement.innerHTML = `
-					<img src="${role === "Lead" ? 'LeadDancerSilhouette.png' : 'FollowDancerSilhouette.png'}" 
-					style="height: 250px; filter: drop-shadow(0 0 10px ${role === "Lead" ? "blue" : "red"})">
+					<img src="${role === "Lead" ? 'LeadDancerSilhouette.png' : role === "Follow" ? 'FollowDancerSilhouette.png' : 'DancersSilhouette.png'}" 
+					style="height: 250px; filter: drop-shadow(0 0 10px ${role === "Lead" ? "blue" : role === "Follow" ? "red" : "yellow"})">
 				`;
-			}
+			//}
 
 			//Reset Auto Drill Timmer
 			timeRemaining = autoDrillSlider.value;
@@ -985,9 +1020,12 @@
 			}
 			
 			let displaySongTitle = `Now Playing: ${currentSong.title}`;
-			// Check if BPM is specified and append it in brackets
+			// Check if BPM or year is specified and append them in brackets
 			if (currentSong.bpm) {
 				displaySongTitle += ` (${currentSong.bpm} BPM)`;
+			}
+			if (currentSong.year) {
+				displaySongTitle += ` - [${currentSong.year}]`;
 			}
 			
 			currentSongTitle.textContent = displaySongTitle;
