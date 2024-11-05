@@ -662,13 +662,16 @@
 
         danceTypesSelect.addEventListener('change', () => {
             resetMovesIfNeeded(); // Reset moves if styles are deselected
-            updateProgressText();
+            //updateProgressText();
             saveSettings();
         });
 
         rolesSelect.addEventListener('change', () => {
-            resetMovesIfNeeded(); // Reset moves if role is changed
-            updateProgressText();
+		
+			editMoveSetRoles(); //modifys remaining moves to the new desired roles
+		
+            //resetMovesIfNeeded(); // Reset moves if role is changed
+            //updateProgressText();
             saveSettings();
         });
 
@@ -808,11 +811,12 @@
 
                 completedMoves.add(danceMove + " " + role);
 
-                // Reset cycle and progress bar if all moves have been completed
+			   // Reset cycle and progress bar if all moves have been completed
                 if (remainingMoves.length === 0) {
                     completedMoves.clear();
                     updateProgressBar(0, 0);
                 }
+
 
             } else {
                 danceType = selectedDanceTypes[Math.floor(Math.random() * selectedDanceTypes.length)];
@@ -820,18 +824,18 @@
                 role = getRole();
                 completedMoves.add(danceMove + " " + role);
             }
+			
+			
+
+			
 
             danceStyleElement.textContent = danceType;
             danceMoveElement.textContent = danceMove;
             roleElement.textContent = role;
-			/*if (role == ""){
-				roleImageElement.innerHTML = "";	
-			}else{*/
-				roleImageElement.innerHTML = `
-					<img src="${role === "Lead" ? 'LeadDancerSilhouette.png' : role === "Follow" ? 'FollowDancerSilhouette.png' : 'DancersSilhouette.png'}" 
-					style="height: 250px; filter: drop-shadow(0 0 10px ${role === "Lead" ? "blue" : role === "Follow" ? "red" : "yellow"})">
-				`;
-			//}
+			roleImageElement.innerHTML = `
+				<img src="${role === "Lead" ? 'LeadDancerSilhouette.png' : role === "Follow" ? 'FollowDancerSilhouette.png' : 'DancersSilhouette.png'}" 
+				style="height: 250px; filter: drop-shadow(0 0 10px ${role === "Lead" ? "blue" : role === "Follow" ? "red" : "yellow"})">
+			`;
 
 			//Reset Auto Drill Timmer
 			timeRemaining = autoDrillSlider.value;
@@ -857,7 +861,9 @@
             const selectedRole = rolesSelect.value;
             if (selectedRole === "Both") {
                 return Math.random() < 0.5 ? "Lead" : "Follow";
-            }
+            }else if (selectedRole === "None") {
+				return "";
+			}
             return selectedRole;
         }
 
@@ -886,6 +892,48 @@
         }
 
 
+		function editMoveSetRoles() {
+			const newRole = rolesSelect.value; // Get the new role
+			const uniqueMoves = {}; // Object to track unique moves by move and type
+
+			remainingMoves.forEach(item => {
+				const key = `${item.move}-${item.type}`; // Create a unique key based on move and type
+
+				// Only process the item if it hasn't been added yet
+				if (!uniqueMoves[key]) {
+					// Modify the role based on the newRole value
+					if (newRole === "Lead") {
+						if (item.role === "Lead" || item.role === "") {
+							uniqueMoves[key] = { move: item.move, type: item.type, role: "Lead" };
+						}
+					} else if (newRole === "Follow") {
+						if (item.role === "Follow" || item.role === "") {
+							uniqueMoves[key] = { move: item.move, type: item.type, role: "Follow" };
+						}
+					} else if (newRole === "None") {
+						uniqueMoves[key] = { move: item.move, type: item.type, role: "" };
+					} else if (newRole === "Both") {
+						// Add both roles for each unique move and type
+						uniqueMoves[key] = { move: item.move, type: item.type, role: "Lead" };
+						uniqueMoves[`${item.move}-${item.type}-follow`] = { move: item.move, type: item.type, role: "Follow" };
+					}
+				}
+			});
+
+			// Convert the uniqueMoves object back into an array
+			remainingMoves = Object.values(uniqueMoves);
+
+			// Optionally, shuffle the moves if needed
+			if (randomCycleCheckbox.checked) {
+				remainingMoves = shuffleArray(remainingMoves);
+			}
+
+			updateProgressText(); // Update progress text after editing the moves
+		}
+
+
+
+
 		let previousDanceTypeSelections = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
 
         function resetMovesIfNeeded() {
@@ -900,35 +948,47 @@
 
 
             // Reset remaining moves and completed moves if switching from "Both" to a single role
-            if (selectedRole !== "Both" || selectedDanceTypes.length === 0 || deselected.length > 0){
-                completedMoves.clear();
+            if (/*selectedRole !== "Both" ||*/ selectedDanceTypes.length === 0 || deselected.length > 0){
+                //alert("Reset the moves!")
+				
+				completedMoves.clear();
                 remainingMoves = [];
-                updateProgressBar(0, 0);
-				//rcc apmpt
-				//if (cycleMovesCheckbox.checked) prepareMoveSet(selectedDanceTypes);
+                //updateProgressBar(0, 0);
             }
+			
+			updateProgressText();
 			
 			
         }
 
         function updateProgressText() {
-            const selectedDanceTypes = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
-            const selectedRole = rolesSelect.value;
+		
+			const completed = completedMoves.size;
+			let totalMoves = completed + remainingMoves.length;	//Simple get total from move cycle arrays if avaiable.
+		
+			//More involved counting of total moves, based on avaiable moves and role selection. 
+			if (totalMoves == 0 || remainingMoves.length == 0){
+				const selectedDanceTypes = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
+				const selectedRole = rolesSelect.value;
 
-            let totalMoves = 0;
-            if (selectedDanceTypes.length) {
-                totalMoves = selectedDanceTypes.reduce((acc, type) => {
-                    const movesCount = danceMoves[type].length;
-                    if (selectedRole === 'Lead' || selectedRole === 'Follow' || selectedRole === 'None') {
-                        return acc + movesCount; // Only count one role's set of moves
-                    } else {
-                        return acc + (movesCount * 2); // Count both roles' moves
-                    }
-                }, 0);
-            }
+				if (selectedDanceTypes.length) {
+					totalMoves = selectedDanceTypes.reduce((acc, type) => {
+						const movesCount = danceMoves[type].length;
+						if (selectedRole === 'Lead' || selectedRole === 'Follow' || selectedRole === 'None') {
+							return acc + movesCount; // Only count one role's set of moves
+						} else {
+							return acc + (movesCount * 2); // Count both roles' moves
+						}
+					}, 0);
+				}
+			}
 
-            const completed = completedMoves.size;
-            updateProgressBar(completed, totalMoves);
+			 
+			updateProgressBar(completed, totalMoves);
+			 
+
+
+		/* ///Rcc: this may be redundant??? looks to be
 
             // Reset progress if no styles or roles selected
             if (totalMoves === 0 || selectedRole === "") {
@@ -936,6 +996,7 @@
                 remainingMoves = []; // Reset remaining moves
                 updateProgressBar(0, totalMoves);
             }
+			*/
         }
 
         function updateProgressBar(completed, total) {
