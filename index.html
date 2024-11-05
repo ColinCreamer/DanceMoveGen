@@ -207,39 +207,7 @@
     <div id="progressText">0 / 0</div>
 
     <script>
-        /*const danceMoves = {
-            Foxtrot: [
-                "Basic", "Promenade Basic", "Left Ad-lib", 
-                "Right Ad-lib", "Side Rock Ad-lib", "CTB Closed Turning Basic", 
-                "OTB Outside Turning Basic", "Cross Body Lead", "Single Twinkle"
-            ],
-            Waltz: [
-                "Basic Box (in place)", "Progressive", "Left 1/4 Turn", 
-                "Right 1/4 Turn", "Left 3/8th Turn", "Right 3/8th Turn", 
-                "4a. Forward and Back Balance Steps", "4b. Side Balance Steps", 
-                "4c. 5th Position Balance Steps", "Cross Body Lead"
-            ],
-            Tango: [
-                "Basic Step", "Outside Basic", "Promenade Basic Turning Left - PTL", 
-                "Promenade Basic Turning Right - PTR", "Corté", "Rocking Corté", "Right Side Fan", "Three Fan Combination","Running Step"
-            ],
-            Rhumba: [
-                "Basic Box Step", "Underarm Turn (Reg. 6 step)", 
-                "Underarm Turn (Adv. 3 Step)", "Cross Body Lead", 
-                "5th Position Breaks", "Open Cuban Walk", "Forward Rock Steps", "Left Turning Rock"
-            ],
-            "Cha-Cha": [
-                "Basic", "Progressive Basic", "Single CrossOver Break", 
-                "Double CrossOver Break", "Natural Underarm Turn", 
-                "2-Way Underarm Turn", "Chase Turns", "Cross Over Chase", "Cross Triple Step"
-            ],
-            "East Coast Swing": [
-                "Single Time Basic", "Double Time Basic", "Tripple Time Basic", 
-                "Release Break", "Underarm Turn", "Underarm with Man Turning", "Egg Beater",
-				"Single Tuck-In Turn", "Double Tuck-In Turn", "Shoulder Spin Tuck-In"
-            ]
-        };
-		*/
+
 		
 		const danceMoves = {
 			Foxtrot: [
@@ -312,30 +280,7 @@
 		};
 
 		
-		
-		
 
-        let completedMoves = new Set();
-        let remainingMoves = [];
-		let autoDrillIntervalId = null;
-		let autoDrillPaused = false;
-        let timeRemaining = 0;
-		
-		
-		/*
-		let musicList = {};
-		fetch('MusicList.json')
-		  .then(response => response.json())
-		  .then(data => {
-			musicList = data;
-		  })
-		  .catch(error => console.error('Error loading music list:', error));
-		*/
-		
-		
-		let currentSong = null;
-		let currentSongDanceType = null;
-		let audio = new Audio();
 
 		//used https://www.beatsperminuteonline.com/ to manauly time the BPMs for the songs by tapping the beat/count with a button
 		
@@ -663,7 +608,27 @@
 		}
 		
 		
+				/*
+		let musicList = {};
+		fetch('MusicList.json')
+		  .then(response => response.json())
+		  .then(data => {
+			musicList = data;
+		  })
+		  .catch(error => console.error('Error loading music list:', error));
+		*/
 		
+		
+
+        let completedMoves = new Set();
+        let remainingMoves = [];
+		let autoDrillIntervalId = null;
+		let autoDrillPaused = false;
+        let timeRemaining = 0;
+		
+		let currentSong = null;
+		let currentSongDanceType = null;
+		let audio = new Audio();
 		
 		
 		
