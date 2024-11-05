@@ -207,7 +207,7 @@
     <div id="progressText">0 / 0</div>
 
     <script>
-        const danceMoves = {
+        /*const danceMoves = {
             Foxtrot: [
                 "Basic", "Promenade Basic", "Left Ad-lib", 
                 "Right Ad-lib", "Side Rock Ad-lib", "CTB Closed Turning Basic", 
@@ -239,6 +239,81 @@
 				"Single Tuck-In Turn", "Double Tuck-In Turn", "Shoulder Spin Tuck-In"
             ]
         };
+		*/
+		
+		const danceMoves = {
+			Foxtrot: [
+				{ index: 1.1, name: "Basic", 						rhythm: "SSQQ" },
+				{ index: 1.2, name: "Promenade Basic", 				rhythm: "SSQQ" },
+				{ index: 3.1, name: "Left Ad-lib", 					rhythm: "SSQQ;SSQQ" },
+				{ index: 3.2, name: "Right Ad-lib", 				rhythm: "SSQQ;SSQQ" },
+				{ index: 3.3, name: "Side Rock Ad-lib", 			rhythm: "SSQQ;SSQQ" },
+				{ index: 2.1, name: "CTB Closed Turning Basic", 	rhythm: "SSQQ;SSQQ" },
+				{ index: 2.2, name: "OTB Outside Turning Basic", 	rhythm: "SSQQ;SSQQ" },
+				{ index: 4, name: "Cross Body Lead", 				rhythm: "SSQQ&;SSQQ&" },
+				{ index: 5, name: "Single Twinkle", 				rhythm: "SQQ" }
+			],
+			Waltz: [
+				{ index: 0,   name: "Basic Box (in place)", 			rhythm: "123;123" },
+				{ index: 2,   name: "Progressive", 						rhythm: "123;123" },
+				{ index: 1.1, name: "Left 1/4 Turn", 					rhythm: "123;123;123;123" },
+				{ index: 3.1, name: "Right 1/4 Turn", 					rhythm: "123;123;123;123;123;123" },
+				{ index: 1.2, name: "Left 3/8th Turn", 					rhythm: "123;123" },
+				{ index: 3.2, name: "Right 3/8th Turn", 				rhythm: "123;123;123;123" },
+				{ index: 4.1, name: "Forward and Back Balance Steps", 	rhythm: "123;123" },
+				{ index: 4.2, name: "Side Balance Steps", 				rhythm: "123;123" },
+				{ index: 4.3, name: "5th Position Balance Steps", 		rhythm: "123;123" },
+				{ index: 5, name: "Cross Body Lead", 					rhythm: "123;123;" }
+			],
+			Tango: [
+				{ index: 1.1, name: "Basic Step", 							rhythm: "SSQQS" },
+				{ index: 1.2, name: "Outside Basic", 						rhythm: "SSQQS" },
+				{ index: 2.1, name: "Promenade Basic Turning Left - PTL", 	rhythm: "SSQQS" },
+				{ index: 2.2, name: "Promenade Basic Turning Right - PTR", 	rhythm: "SSQQS;SSQQS" },
+				{ index: 3.1, name: "Corté", 								rhythm: "SSQQS" },
+				{ index: 3.2, name: "Rocking Corté", 						rhythm: "QQSS;QQSS;QQS" },
+				{ index: 4.1, name: "Right Side Fan", 						rhythm: "QQSS;QQSS;QQS" },
+				{ index: 4.2, name: "Three Fan Combination", 				rhythm: "QQSS;SSQQ;QQS" },
+				{ index: 5, name: "Running Step",							rhythm: "SSQQ;SSQQ;QQS" }
+			],
+			Rhumba: [
+				{ index: 1.1, name: "Basic Box Step", 					rhythm: "QQS;QQS" },
+				{ index: 2.1, name: "Underarm Turn (Reg. 6 step)", 		rhythm: "QQS;QQS;QQS;QQS" },
+				{ index: 2.2, name: "Underarm Turn (Adv. 3 Step)", 		rhythm: "QQS;QQS;QQS;QQS" },
+				{ index: 1.2, name: "Cross Body Lead", 					rhythm: "QQS;QQS;QQS;QQS" },
+				{ index: 3, name: "5th Position Breaks", 				rhythm: "QQS;QQS;QQS;QQS;QQS;QQS" },
+				{ index: 4, name: "Open Cuban Walk", 					rhythm: "QQS;QQS;QQS;QQS;QQS;QQS;QQS;QQS" },
+				{ index: 5.1, name: "Forward Rock Steps", 				rhythm: "QQS;QQS;QQS;QQS" },
+				{ index: 5.2, name: "Left Turning Rock", 				rhythm: "QQS;QQS;QQS;QQS" }
+			],
+			"Cha-Cha": [
+				{ index: 1.1, name: "Basic", 							rhythm: "1234&;1234&" },
+				{ index: 1.2, name: "Progressive Basic", 				rhythm: "1234&;1234&" },
+				{ index: 2.1, name: "Single CrossOver Break", 			rhythm: "1234&;1234&;1234&;1234&" },
+				{ index: 2.2, name: "Double CrossOver Break", 			rhythm: "1234&;1234;12&;3412;34&;1234&" },
+				{ index: 3.1, name: "Natural Underarm Turn", 			rhythm: "1234&;1234&;1234&;1234&" },
+				{ index: 3.2, name: "Two-Way Underarm Turn", 			rhythm: "123;4&1;23;4&1;23;4&1;234&" },
+				{ index: 4.1, name: "Chase Turns", 						rhythm: "1234&;1234&;1234&;1234&;1234&;1234&" },
+				{ index: 4.2, name: "Cross Over Chase", 				rhythm: "1234&;1234&;1234&;1234&;1234&;1234&" },
+				{ index: 5, name: "Cross Triple Step", 					rhythm: "123;4&1;2&3;4&1;23;4&1;2&3:4&1:23;4&1234&" }
+			],
+			"East Coast Swing": [
+				{ index: 1.1, name: "Single Time Basic", 				rhythm: "SSQQ" },
+				{ index: 1.2, name: "Double Time Basic", 				rhythm: "12,34,56" },
+				{ index: 1.3, name: "Triple Time Basic", 				rhythm: "1&2,3&4,56" },
+				{ index: 2, name: "Release Break", 						rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56" },
+				{ index: 3.1, name: "Underarm Turns", 					rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56" },
+				{ index: 3.2, name: "Underarm with Man Turning", 		rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56" },
+				{ index: 4, name: "Egg Beater", 						rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" },
+				{ index: 5.1, name: "Single Tuck-In Turn", 				rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" },
+				{ index: 5.2, name: "Double Tuck-In Turn", 				rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" },
+				{ index: 5.3, name: "Shoulder Spin Tuck-In", 			rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" }
+			]
+		};
+
+		
+		
+		
 
         let completedMoves = new Set();
         let remainingMoves = [];
@@ -823,7 +898,7 @@
                 danceType = selectedDanceTypes[Math.floor(Math.random() * selectedDanceTypes.length)];
                 danceMove = danceMoves[danceType][Math.floor(Math.random() * danceMoves[danceType].length)];
                 role = getRole();
-                completedMoves.add(danceMove + " " + role);
+                completedMoves.add(danceMove.name + " " + role);
             }
 			
 			
@@ -831,7 +906,7 @@
 			
 
             danceStyleElement.textContent = danceType;
-            danceMoveElement.textContent = danceMove;
+            danceMoveElement.textContent = floatToNumLeterFormat(danceMove.index) + " " + danceMove.name;
             roleElement.textContent = role;
 			roleImageElement.innerHTML = `
 				<img src="${role === "Lead" ? 'LeadDancerSilhouette.png' : role === "Follow" ? 'FollowDancerSilhouette.png' : 'DancersSilhouette.png'}" 
@@ -857,6 +932,49 @@
 			
 			
         }
+		
+		//Converts a decimal Index stored in the move dataset, into the Syllabus format
+		//(Converts 1.1 to 1B.)
+		function floatToNumLeterFormat(num) {
+
+			let [whole, decimal] = num.toString().split("."); // Split into integer and decimal parts
+			whole = parseInt(whole); // Parse the integer part
+			decimal = parseInt(decimal || "0"); // Parse the decimal part, default to 0 if undefined
+
+			// Convert decimal part to letter format
+			let suffix = "";
+			if (decimal === 1) suffix = "a";
+			else if (decimal === 2) suffix = "b";
+			else if (decimal === 3) suffix = "c";
+			else if (decimal === 4) suffix = "d";
+			else if (decimal === 5) suffix = "e";
+			else if (decimal === 6) suffix = "f";
+			else if (decimal === 7) suffix = "g";
+			else if (decimal === 8) suffix = "h";
+			else if (decimal === 9) suffix = "i";
+
+			return `${whole}${suffix}.`; // Format as required
+		}
+		
+		//counts the number of beats in a dance move rhythm string
+		//Slows = 2 beats, Quicks = 1 beat, digits = 1 beat
+		function countMoveBeats(rhythm) {
+			let beats = 0;
+
+			for (let char of rhythm) {
+			if (char === 'S') {
+				beats += 2;  // Slow counts as 2 beats
+			} else if (char === 'Q') {
+				beats += 1;  // Quick counts as 1 beat
+			} else if (!isNaN(char)) {
+				beats += 1;  // Each digit counts as 1 beat
+			}
+			}
+
+			return beats;
+		}
+
+		
 
         function getRole() {
             const selectedRole = rolesSelect.value;
@@ -1045,9 +1163,9 @@
 		
 			synth.cancel();
 		
-			const removedDanceMoveNumber = danceMove.replace("4a.",'').replace("4b.",'').replace("4c.",'').replace("Reg. ",'Regular').replace("Adv. ",'Advanced ');
+			const danceMoveSpeachTweeked = danceMove.name.replace("Reg. ",'Regular').replace("Adv. ",'Advanced ');
 		
-            const message = `${danceType} ${removedDanceMoveNumber} - ${role}.`;
+            const message = `${danceType} ${danceMoveSpeachTweeked} - ${role}.`;
             const utterance = new SpeechSynthesisUtterance(message);
 			utterance.voice = role === 'Follow' ? femaleVoice : maleVoice;
 			utterance.rate=1.3;
