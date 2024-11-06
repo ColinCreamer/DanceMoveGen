@@ -179,7 +179,7 @@
     </div>
 	
 	<label>
-	<input type="checkbox" id="rhythmCountCheckbox" />
+		<input type="checkbox" id="rhythmCountCheckbox" />
 		Narrate Count/Rhythm
 	</label>
 	
@@ -187,6 +187,8 @@
 	<input type="range" id="rhythmCountBpmSlider" min="60" max="230" value="100">
 	<label for="rhythmCountBpmSlider">BPM:</label>
 	<span id="rhythmCountBpmSliderValue">100</span>
+	<label><input type="checkbox" id="repeatCountCheckbox"/>loop</label>
+	<label><input type="checkbox" id="measureCountingCheckbox"/>Measures</label>
 	
 	<br>
 	<hr>
@@ -683,6 +685,9 @@
 		const rhythmCountCheckbox = document.getElementById("rhythmCountCheckbox");
 		const rhythmCountBpmSlider = document.getElementById("rhythmCountBpmSlider");
 		const rhythmCountBpmSliderDisplay = document.getElementById("rhythmCountBpmSliderValue");
+		const repeatCountCheckbox = document.getElementById("repeatCountCheckbox");
+		const measureCountingCheckbox = document.getElementById("measureCountingCheckbox");
+
 		
 		const currentSongTitle = document.getElementById("currentSongTitle");
 		const musicPauseButton = document.getElementById('musicPauseButton');
@@ -735,6 +740,15 @@
             rhythmCountBpmSlider.value = rhythmCountBpmSetting || 100;
 			rhythmCountBpmSliderDisplay.textContent = rhythmCountBpmSlider.value;
 
+
+			const repeatCountSetting = localStorage.getItem('repeatCount');
+            repeatCountCheckbox.checked = repeatCountSetting === 'true';
+			
+			const measureCountingSetting = localStorage.getItem('measureCounting');
+            measureCountingCheckbox.checked = measureCountingSetting === 'true';
+
+
+
             toggleAutoDrillSettings();
 
 
@@ -743,6 +757,29 @@
 
 			
         };
+		
+		
+		function saveSettings() {
+            const selectedDanceTypes = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
+            localStorage.setItem('danceTypes', selectedDanceTypes.join(','));
+            localStorage.setItem('role', rolesSelect.value);
+            localStorage.setItem('cycleMoves', cycleMovesCheckbox.checked);
+            localStorage.setItem('randomCycle', randomCycleCheckbox.checked);
+			localStorage.setItem('enableVoice', enableVoiceCheckbox.checked);
+			
+			localStorage.setItem('autoDrill', autoDrillCheckbox.checked);
+			localStorage.setItem('autoDrillSlider', autoDrillSlider.value);
+			localStorage.setItem('playMusic', playMusicCheckbox.checked);
+			
+			localStorage.setItem('rhythmCount', rhythmCountCheckbox.checked);
+			localStorage.setItem('rhythmCountBpm', rhythmCountBpmSlider.value);
+			
+        }
+		
+		
+		//------UI Event Listeners---------------
+		
+		
 
         danceTypesSelect.addEventListener('change', () => {
             resetMovesIfNeeded(); // Reset moves if styles are deselected
@@ -829,8 +866,6 @@
 			if (!rhythmCountCheckbox.checked){
 				stopRythemCountAnnouncements();
 			}
-		
-			//ensureVoiceCalibration();
 			saveSettings();
 		});
 
@@ -838,6 +873,17 @@
 			rhythmCountBpmSliderDisplay.textContent =  rhythmCountBpmSlider.value;
 			saveSettings();
 		});
+
+
+		repeatCountCheckbox.addEventListener('change', function() {
+			//Save setting
+			localStorage.setItem('repeatCount', repeatCountCheckbox.checked);
+		});
+		measureCountingCheckbox.addEventListener('change', function() {
+			//Save setting
+			localStorage.setItem('measureCounting', measureCountingCheckbox.checked);
+		});
+
 
 
 
@@ -880,6 +926,10 @@
 				}
             }
         });
+		
+		
+		
+
 		
 		
 
@@ -1135,22 +1185,7 @@
             progressText.textContent = `${completed} / ${total}`;
         }
 
-        function saveSettings() {
-            const selectedDanceTypes = Array.from(danceTypesSelect.selectedOptions).map(option => option.value);
-            localStorage.setItem('danceTypes', selectedDanceTypes.join(','));
-            localStorage.setItem('role', rolesSelect.value);
-            localStorage.setItem('cycleMoves', cycleMovesCheckbox.checked);
-            localStorage.setItem('randomCycle', randomCycleCheckbox.checked);
-			localStorage.setItem('enableVoice', enableVoiceCheckbox.checked);
-			
-			localStorage.setItem('autoDrill', autoDrillCheckbox.checked);
-			localStorage.setItem('autoDrillSlider', autoDrillSlider.value);
-			localStorage.setItem('playMusic', playMusicCheckbox.checked);
-			
-			localStorage.setItem('rhythmCount', rhythmCountCheckbox.checked);
-			localStorage.setItem('rhythmCountBpm', rhythmCountBpmSlider.value);
-			
-        }
+
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -1327,6 +1362,18 @@
 				// Update cumulative time for the next clip
 				currentTime += duration;
 			});
+			
+			
+			
+			 // If `repeatCountCheckbox` is checked, schedule another round of counting after the full rhythm cycle
+			setTimeout(() => {
+				if (repeatCountCheckbox.checked) {
+					announceRhythmWithAudio(rhythmString, bpm);
+				}
+			}, currentTime);
+			
+			
+			
 		}
 		
 		
