@@ -876,6 +876,15 @@
 
 
 		repeatCountCheckbox.addEventListener('change', function() {
+		
+			if(repeatCountCheckbox.checked){
+				console.log("repeatCountCheckbox");
+				if(danceStyleElement.textContent != "" && currentDanceMove){
+					startRythmCountIfNotRunning(currentDanceMove.rhythm ,rhythmCountBpmSlider.value);
+				}
+			}
+		
+		
 			//Save setting
 			localStorage.setItem('repeatCount', repeatCountCheckbox.checked);
 		});
@@ -930,7 +939,7 @@
 		
 		
 
-		
+		let currentDanceMove;
 		
 
         function generateDanceMove() {
@@ -960,7 +969,7 @@
                     danceType = nextMove.type;
                     role = nextMove.role;
                 }
-
+				
                 completedMoves.add(danceMove.name + " " + role);
 
 			   // Reset cycle and progress bar if all moves have been completed
@@ -978,7 +987,7 @@
 				
             }
 			
-			
+			currentDanceMove = danceMove;
 
 			
 
@@ -1234,7 +1243,7 @@
 		
 		// Preload audio clips
 		const audioClips = {};
-		const clipNames = ["Slow", "Quick", "And", "1_high", "1_Low", "2_low", "3_low", "4_low", "5_low", "6_low", "7_low", "8_low", "9_low"];
+		const clipNames = ["Slow", "Quick", "And", "1_high", "1_low", "2_high", "2_low", "3_high", "3_low", "4_high", "4_low", "5_high", "5_low", "6_high", "6_low", "7_high", "7_low", "8_high", "8_low", "9_high", "9_low"];
 		clipNames.forEach(name => {
 			audioClips[name] = new Audio(`CountClips/${name}.mp3`);
 			
@@ -1268,22 +1277,30 @@
 			scheduledRythemClipTimeouts = [];  // Reset the array for new timeouts
 		}
 
+		function startRythmCountIfNotRunning(rhythmString, bpm){
+		//console.log(rhythmString,scheduledRythemClipTimeouts.length)
+			if (scheduledRythemClipTimeouts.length == 0 && rhythmString != ""){
+				announceRhythmWithAudio(rhythmString, bpm);
+			}
+		}
+
 
 		// Function to announce rhythm using preloaded audio clips
 		function announceRhythmWithAudio(rhythmString, bpm) {
 			
 			stopRythemCountAnnouncements(); // Stop any ongoing rhythm count announcements
 			
+			//console.log("WEEE");
+			
 			const rhythmArray = rhythmString.split('').filter(char => /[SQ&1-9]/.test(char));
 			const beatsPerMillisecond = 60000 / bpm;
 			let currentTime = 0;
 
-
+			// Determine the count for the current dance style
+			const currentDanceStyleCount = danceStyleCounts[currentSongDanceType] || 4;  //3count,4count or 6count
 
 			//If music is playing, calcualte the delay we need to wait before counting, in order to start on the 1
 			if (musicAudio && !musicAudio.paused && !musicAudio.ended){
-				// Determine the count for the current dance style
-				const currentDanceStyleCount = danceStyleCounts[currentSongDanceType] || 4;  //3count,4count or 6count
 				//Calculate the delay till ONE
 				const delayForNextOneCount = timeUntilNextOne(currentDanceStyleCount,currentSong.startTime,musicAudio.currentTime,currentSong.bpm);
 				//Add it to the accumulative time var for setting the time-out delays for the counting Audio
@@ -1293,7 +1310,8 @@
 
 			
 
-
+			let currentCount = 0;
+			let currentMeasure = 1;
 
 
 			rhythmArray.forEach((char, index) => {
@@ -1301,6 +1319,7 @@
 				let duration;
 				let clipKey; // Audio clip key in `audioClips` object
 				
+			
 				
 				//Looks ahead to see if there is an & count after this one, if there is we cant to make room for it at the end of this count
 				let subtractNextAnd = 0;
@@ -1312,9 +1331,11 @@
 
 				if (char === 'S') {
 					duration = (2 - subtractNextAnd) * beatsPerMillisecond;
+					currentCount+=2;
 					clipKey = 'Slow';
 				} else if (char === 'Q') {
 					duration = (1 - subtractNextAnd) * beatsPerMillisecond;
+					currentCount+=1;
 					clipKey = 'Quick';
 				} else if (char === '&') {
 					duration = 0.5 * beatsPerMillisecond;
@@ -1325,12 +1346,33 @@
 					}
 				} else {
 					duration = (1 - subtractNextAnd) * beatsPerMillisecond; // Digits are 1 beat
+					currentCount+=1;
 					if (char == 1){
 						clipKey = `${char}_high`;
 					}else{
 						clipKey = `${char}_low`;
 					}
 				}
+				
+				
+				//Overwrite ONE with measure
+				if (measureCountingCheckbox.checked && char == '1') {
+				
+					clipKey = `${currentMeasure}_high`;
+				
+				}
+				
+				
+				
+				//Completed a measure, reset count and incrment measure
+				if (currentCount == currentDanceStyleCount){
+					currentMeasure+=1;
+					currentCount = 0;
+				}
+
+
+
+
 
 
 				// Get the clip and calculate if its duration exceeds the allocated duration
@@ -1364,15 +1406,21 @@
 			});
 			
 			
+			if (currentTime > 0){
+				 // If `repeatCountCheckbox` is checked, schedule another round of counting after the full rhythm cycle
+				const timeoutId2 = setTimeout(() => {
+					if (repeatCountCheckbox.checked) {
+						announceRhythmWithAudio(rhythmString, bpm);
+					}else{
+						//Clears it, just so we can tell its not runing
+						stopRythemCountAnnouncements(); 
+					}
+				}, currentTime);
+				
+				//Throw this in the schedual array too, so that the loop can be canceled when anotehr move naration starts
+				scheduledRythemClipTimeouts.push(timeoutId2);
 			
-			 // If `repeatCountCheckbox` is checked, schedule another round of counting after the full rhythm cycle
-			setTimeout(() => {
-				if (repeatCountCheckbox.checked) {
-					announceRhythmWithAudio(rhythmString, bpm);
-				}
-			}, currentTime);
-			
-			
+			}
 			
 		}
 		
