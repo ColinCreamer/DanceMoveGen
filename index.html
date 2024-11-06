@@ -226,6 +226,7 @@
 
     <script>
 
+
 		
 		const danceMoves = {
 			Foxtrot: [
@@ -637,6 +638,12 @@
 		*/
 		
 		
+		const danceStyleCounts = {
+			"Waltz": 3,
+			"Swing": 6
+			// Other dance styles with specific counts can be added here if needed
+		};
+		
 
         let completedMoves = new Set();
         let remainingMoves = [];
@@ -646,7 +653,7 @@
 		
 		let currentSong = null;
 		let currentSongDanceType = null;
-		let audio = new Audio();
+		let musicAudio = new Audio();
 		
 		
 		
@@ -771,7 +778,7 @@
 				playMusic(danceType);
 				musicControlSettings.style.display = 'flex'; //show   'block'
 			} else {
-				audio.pause();
+				musicAudio.pause();
 				currentSongTitle.textContent = '';
 				musicControlSettings.style.display = 'none';//hide
 				currentSong = null;
@@ -1194,6 +1201,25 @@
 		});
 
 
+	function timeUntilNextOne(beatsPerBar, firstOneTime, currentTime, bpm) {
+		const msPerBeat = 60000 / bpm; // Milliseconds per beat based on BPM
+		const barDuration = msPerBeat * beatsPerBar; // Total duration of one bar in milliseconds
+
+		// Calculate time since the last "1" count
+		const timeSinceFirstOne = currentTime - firstOneTime;
+
+		// Calculate how far we are within the current bar
+		const timeWithinBar = timeSinceFirstOne % barDuration;
+
+		// Calculate time remaining until the next "1" count
+		const timeUntilNextOne = barDuration - timeWithinBar;
+
+		return timeUntilNextOne;
+	}
+
+
+
+
 		let scheduledRythemClipTimeouts = [];  // Array to keep track of scheduled timeouts
 
 		function stopRythemCountAnnouncements(){
@@ -1211,6 +1237,24 @@
 			const rhythmArray = rhythmString.split('').filter(char => /[SQ&1-9]/.test(char));
 			const beatsPerMillisecond = 60000 / bpm;
 			let currentTime = 0;
+
+
+
+			//If music is playing, calcualte the delay we need to wait before counting, in order to start on the 1
+			if (musicAudio && !musicAudio.paused && !musicAudio.ended){
+				// Determine the count for the current dance style
+				const currentDanceStyleCount = danceStyleCounts[currentSongDanceType] || 4;  //3count,4count or 6count
+				//Calculate the delay till ONE
+				const delayForNextOneCount = timeUntilNextOne(currentDanceStyleCount,currentSong.startTime,musicAudio.currentTime,currentSong.bpm);
+				//Add it to the accumulative time var for setting the time-out delays for the counting Audio
+				currentTime += delayForNextOneCount;
+			}
+			
+
+			
+
+
+
 
 			rhythmArray.forEach((char, index) => {
 				// Determine the duration for each rhythm character based on its type
@@ -1281,7 +1325,6 @@
 		}
 		
 		
-		
 
 		
 		function playMusic(danceType) {
@@ -1294,7 +1337,7 @@
 
 			// Stop the current song if it's playing
 			if (currentSong) {
-				audio.pause();
+				musicAudio.pause();
 			}
 
 			// Get a random song from the selected dance type
@@ -1323,10 +1366,10 @@
 			
 			}
 
-			audio.src = currentSong.url;
-			audio.currentTime = currentSong.startTime || 0; // Default to 0 if no startTime is specified
+			musicAudio.src = currentSong.url;
+			musicAudio.currentTime = currentSong.startTime || 0; // Default to 0 if no startTime is specified
 			if (!isMusicPaused){
-				audio.play();
+				musicAudio.play();
 			}
 			
 			let displaySongTitle = `Now Playing: ${currentSong.title}`;
@@ -1346,7 +1389,7 @@
 			currentSongTitle.textContent = displaySongTitle;
 
 			// When the song ends, play the next song
-			audio.onended = () => playMusic(danceType);
+			musicAudio.onended = () => playMusic(danceType);
 		}
 		
 		function playNextSong() {
@@ -1363,10 +1406,10 @@
 
 		function toggleMusicPause() {
 			if (isMusicPaused) {
-				audio.play();
+				musicAudio.play();
 				musicPauseButton.textContent = '⏸';
 			} else {
-				audio.pause();
+				musicAudio.pause();
 				musicPauseButton.textContent = '⏵';
 			}
 			isMusicPaused = !isMusicPaused;
