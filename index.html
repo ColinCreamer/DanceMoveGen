@@ -891,6 +891,7 @@
             let danceMove;
             let role;
 
+
             if (cycleMovesCheckbox.checked) {
                 if (remainingMoves.length === 0) {
                     prepareMoveSet(selectedDanceTypes);
@@ -907,7 +908,7 @@
                     role = nextMove.role;
                 }
 
-                completedMoves.add(danceMove + " " + role);
+                completedMoves.add(danceMove.name + " " + role);
 
 			   // Reset cycle and progress bar if all moves have been completed
                 if (remainingMoves.length === 0) {
@@ -921,6 +922,7 @@
                 danceMove = danceMoves[danceType][Math.floor(Math.random() * danceMoves[danceType].length)];
                 role = getRole();
                 completedMoves.add(danceMove.name + " " + role);
+				
             }
 			
 			
