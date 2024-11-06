@@ -730,8 +730,7 @@
 
             updateProgressText();
 			
-			
-			//ensureVoiceCalibration();
+
 			
         };
 
@@ -829,66 +828,6 @@
 			rhythmCountBpmSliderDisplay.textContent =  rhythmCountBpmSlider.value;
 			saveSettings();
 		});
-
-/*
-	//------- Cal;ibrate Voice Timming
-	
-	function calibrateVoiceTiming() {
-		const phrases = ["Slow", "Quick", "And", "1", "2", "3", "4", "5", "6", "7", "8"];
-		const timingData = {};
-		let currentPhraseIndex = 0;
-
-		// Announce calibration and start the timing process
-		speak("Calibrating voice", () => {
-			calibrateNextPhrase();
-		});
-
-		function calibrateNextPhrase() {
-			if (currentPhraseIndex >= phrases.length) {
-				// Save all timing data to local storage once calibration is complete
-				localStorage.setItem("voiceTimingData", JSON.stringify(timingData));
-				console.log("Voice calibration complete:", timingData);
-				return;
-			}
-
-			const phrase = phrases[currentPhraseIndex];
-			const startTime = performance.now();
-
-			// Use speech synthesis to speak the phrase
-			speak(phrase, () => {
-				const endTime = performance.now();
-				timingData[phrase] = endTime - startTime;
-				currentPhraseIndex++;
-				calibrateNextPhrase(); // Move to the next phrase after current one completes
-			});
-		}
-	}
-
-	// Function to speak a phrase with a callback on completion
-	function speak(text, onEndCallback) {
-		const utterance = new SpeechSynthesisUtterance(text);
-		utterance.onend = onEndCallback;
-		speechSynthesis.speak(utterance);
-	}
-
-	let voiceTimingData;
-
-	// Check if calibration data exists
-	function ensureVoiceCalibration() {
-		voiceTimingData = JSON.parse(localStorage.getItem("voiceTimingData"));
-		if (!voiceTimingData) {
-			calibrateVoiceTiming();
-		} else {
-			console.log("Calibration data loaded from storage:", voiceTimingData);
-		}
-	}
-	
-	
-	//-------------------
-*/
-
-
-
 
 
 
@@ -1238,7 +1177,6 @@
 			const bpmSetting = rhythmCountBpmSlider.value;
 			utterance.onend = () => {
 				if (rhythmCountCheckbox.checked) {
-					//speakRhythmCount(danceMove.rhythm, bpmSetting);
 					announceRhythmWithAudio(danceMove.rhythm, bpmSetting);
 				}
 			};
@@ -1249,9 +1187,10 @@
 		
 		// Preload audio clips
 		const audioClips = {};
-		const clipNames = ["Slow", "Quick", "And", "1_high", "2_low", "3_low", "4_low", "5_low", "6_low", "7_low", "8_low", "9_low"];
+		const clipNames = ["Slow", "Quick", "And", "1_high", "1_Low", "2_low", "3_low", "4_low", "5_low", "6_low", "7_low", "8_low", "9_low"];
 		clipNames.forEach(name => {
 			audioClips[name] = new Audio(`CountClips/${name}.mp3`);
+			
 		});
 
 
@@ -1267,7 +1206,7 @@
 		// Function to announce rhythm using preloaded audio clips
 		function announceRhythmWithAudio(rhythmString, bpm) {
 			
-			stopRythemCountAnnouncements();
+			stopRythemCountAnnouncements(); // Stop any ongoing rhythm count announcements
 			
 			const rhythmArray = rhythmString.split('').filter(char => /[SQ&1-9]/.test(char));
 			const beatsPerMillisecond = 60000 / bpm;
@@ -1277,18 +1216,31 @@
 				// Determine the duration for each rhythm character based on its type
 				let duration;
 				let clipKey; // Audio clip key in `audioClips` object
+				
+				
+				//Looks ahead to see if there is an & count after this one, if there is we cant to make room for it at the end of this count
+				let subtractNextAnd = 0;
+				/* //Edit, not liking how rushed it makes the & with this
+				if (index + 1 <= rhythmArray.length && rhythmArray[index + 1] === '&'){
+					subtractNextAnd = 0.2;
+				}
+				*/
 
 				if (char === 'S') {
-					duration = 2 * beatsPerMillisecond;
+					duration = (2 - subtractNextAnd) * beatsPerMillisecond;
 					clipKey = 'Slow';
 				} else if (char === 'Q') {
-					duration = 1 * beatsPerMillisecond;
+					duration = (1 - subtractNextAnd) * beatsPerMillisecond;
 					clipKey = 'Quick';
 				} else if (char === '&') {
 					duration = 0.5 * beatsPerMillisecond;
 					clipKey = 'And';
+					//This will position the "&" audio clip to play at the end of the previous beat wich we cleared space for above
+					if (index > 0 ) {
+						currentTime -= 0.5 * beatsPerMillisecond; // Reduce previous time for half-beat overlap
+					}
 				} else {
-					duration = 1 * beatsPerMillisecond; // Digits are 1 beat
+					duration = (1 - subtractNextAnd) * beatsPerMillisecond; // Digits are 1 beat
 					if (char == 1){
 						clipKey = `${char}_high`;
 					}else{
@@ -1296,17 +1248,25 @@
 					}
 				}
 
-				// Adjust timing if there's an "&" following a beat
-				if (char === '&' && index > 0 && rhythmArray[index - 1] === 'S') {
-					duration = 0.5 * beatsPerMillisecond;
-					currentTime -= 0.5 * beatsPerMillisecond; // Reduce previous time for half-beat overlap
+
+				// Get the clip and calculate if its duration exceeds the allocated duration
+				const clip = audioClips[clipKey];
+				const clipDuration = clip ? clip.duration * 1000 : 0; // Clip duration in milliseconds
+				let adjustedSpeed = 1;
+
+				if (clipDuration > duration) {
+					// Speed up the clip if its natural duration is longer than the allocated duration
+					adjustedSpeed = clipDuration/duration;
+					console.log("adjustedSpeed", adjustedSpeed)
 				}
+
 
 				// Schedule the audio clip to play at the calculated time
 				 const timeoutId = setTimeout(() => {
-					if (audioClips[clipKey]) {
-						audioClips[clipKey].currentTime = 0; // Reset playback position
-						audioClips[clipKey].play();
+					if (clip) {
+						clip.currentTime = 0; // Reset playback position
+						clip.playbackRate = adjustedSpeed; // Adjust speed to fit duration
+						clip.play();
 					}
 				}, currentTime);
 
@@ -1322,190 +1282,7 @@
 		
 		
 		
-		
-		
-		
-		/*
-		// Function to load durations into localStorage if they don’t already exist
-		async function calibrateAudioDurations() {
-			const clips = [
-				"Slow", "Quick", "And",
-				"1_low", "1_high",
-				"2_low", "2_high",
-				"3_low", "3_high",
-				"4_low", "4_high",
-				"5_low", "5_high",
-				"6_low", "6_high",
-				"7_low", "7_high",
-				"8_low", "8_high",
-				"9_low", "9_high",
-				"10_low", "10_high"
-			];
-			const durations = JSON.parse(localStorage.getItem("audioDurations")) || {};
 
-			for (const clip of clips) {
-				if (!(clip in durations)) {
-					const audio = new Audio(`CountClips/${clip}.mp3`);
-					await new Promise((resolve) => {
-						audio.onloadedmetadata = () => {
-							durations[clip] = audio.duration * 1000; // Convert to milliseconds
-							resolve();
-						};
-					});
-				}
-			}
-
-			localStorage.setItem("audioDurations", JSON.stringify(durations));
-			return durations;
-		}
-		
-		
-		async function announceRhythmWithAudio(rhythmString, bpm) {
-			const beatDuration = 60000 / bpm; // One beat in ms
-			const durations = await calibrateAudioDurations(); // Get or calibrate durations
-
-			const rhythmArray = rhythmString.split('').filter(char => /[SQ&1-9]/.test(char));; // e.g., "SS&" => ["S", "S", "&"]
-
-			// Function to play a clip and adjust its pause to fit the duration quota
-			async function playClipAndPause(clipName, durationQuota) {
-				const audio = new Audio(`CountClips/${clipName}.mp3`);
-				const playPromise = audio.play();
-
-				// Play the clip fully, then adjust the remaining time to fit the quota
-				if (playPromise !== undefined) {
-					await playPromise;
-					const remainingTime = durationQuota - durations[clipName];
-					if (remainingTime > 0) await new Promise(res => setTimeout(res, remainingTime));
-				}
-			}
-
-			for (let i = 0; i < rhythmArray.length; i++) {
-				let durationQuota = beatDuration; // Default for 1 beat
-				let clipName = rhythmArray[i];
-
-				if (clipName === 'S') {
-					durationQuota = 2 * beatDuration; // Slow is 2 beats
-					clipName = 'Slow';
-				} else if (clipName === 'Q') {
-					durationQuota = beatDuration; // Quick is 1 beat
-					clipName = 'Quick';
-				} else if (clipName === '&') {
-					durationQuota = 0.5 * beatDuration; // & is half a beat
-					clipName = 'And';
-
-					// If the previous rhythm was S or Q, adjust its quota by taking 0.5 beats
-					if (i > 0 && (rhythmArray[i - 1] === 'S' || rhythmArray[i - 1] === 'Q')) {
-						const previousIndex = i - 1;
-						const previousClip = rhythmArray[previousIndex] === 'S' ? 'Slow' : 'Quick';
-
-						// Deduct 0.5 beat from the previous rhythm's quota
-						const adjustedPreviousQuota = (rhythmArray[previousIndex] === 'S' ? 2 : 1) * beatDuration - 0.5 * beatDuration;
-						await playClipAndPause(previousClip, adjustedPreviousQuota);
-						
-						// Move on to the current '&' rhythm without delay
-						await playClipAndPause(clipName, durationQuota);
-						continue; // Skip to the next rhythm after processing '&'
-					}
-				} else if (!isNaN(clipName)) {
-					durationQuota = beatDuration; // Digits represent 1 beat each
-				}
-
-				await playClipAndPause(clipName, durationQuota);
-			}
-		}
-
-
-------------------------------------
-		*/
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
-		/*
-		function speakRhythmCount(rhythm, bpm) {
-			if (!rhythmCountCheckbox.checked) return;
-
-			const beats = calculateBeats(rhythm); // Convert rhythm string to beat intervals
-			const beatDurationMs = (60 / bpm) * 1000; // Duration of one beat in milliseconds
-			let currentIndex = 0;
-
-			function speakWithTiming(text, beatsRequired) {
-				const totalDuration = beatDurationMs * beatsRequired; // Time allocated for this utterance
-				const pauseDuration = totalDuration * 0;//0.2; // Allocate 20% of time for a pause
-				const speechDuration = totalDuration - pauseDuration;
-
-				// Set speech rate dynamically to fit within allocated speech duration
-				const utterance = new SpeechSynthesisUtterance(text);
-				//utterance.voice = maleVoice;
-				utterance.rate = calculateSpeechRate(text, speechDuration); // Dynamic rate based on text and duration
-				
-
-				// Play the utterance and queue the next one after total duration
-				window.speechSynthesis.speak(utterance);
-				setTimeout(playNextBeat, totalDuration); // Move to next after the total duration
-			}
-
-			function playNextBeat() {
-				if (!rhythmCountCheckbox.checked) return;
-				if (currentIndex >= beats.length) return; // Stop if all beats are counted
-				const beat = beats[currentIndex];
-
-				// Decide the text and timing based on the beat type
-				if (beat === '1' || beat === '2' || beat === '3'|| beat === '4'|| beat === '5'|| beat === '6' || beat === '7' || beat === '8'|| beat === '9') {
-					speakWithTiming(beat, 1); // Digits take 1 beat
-				} else if (beat === 'Q') {
-					speakWithTiming("Quick", 1); // Quick takes 1 beat
-				} else if (beat === 'S') {
-					speakWithTiming("Slow", 2); // Slow takes 2 beats
-				} else if (beat === '&') {
-					speakWithTiming("And", 0.5); // & takes half a beat
-				}
-
-				currentIndex++;
-			}
-
-			playNextBeat();
-		}
-
-		// Calculate dynamic speech rate based on desired duration
-		function calculateSpeechRate(text, targetDurationMs) {
-			//const baseDuration = 1000; // Assume default speech rate takes about 1 second for "Slow" or "Quick"
-			
-			const baseDuration = voiceTimingData[text];
-			
-			console.log (voiceTimingData)
-			console.log (voiceTimingData[text])
-			
-			return Math.round(baseDuration / targetDurationMs); // Adjust rate to fit the target duration
-		}
-
-		// Parse rhythm string into beat intervals
-		function calculateBeats(rhythm) {
-			const beats = [];
-			for (const char of rhythm) {
-				if (char === 'S') {
-					beats.push('S'); // Slow
-				} else if (char === 'Q') {
-					beats.push('Q'); // Quick
-				} else if (char === '&') {
-					beats.push('&'); // Half beat
-				} else if (!isNaN(char)) { // Number digits
-					beats.push(char);
-				}
-			}
-			return beats;
-		}
-		
-		*/
-		
-		
 		
 		function playMusic(danceType) {
 			if (!musicList[danceType]) return;
