@@ -1333,6 +1333,11 @@
 			// Check if BPM or year is specified and append them in brackets
 			if (currentSong.bpm) {
 				displaySongTitle += ` (${currentSong.bpm} BPM)`;
+				//Auto synk the count BPM setting to match the song
+				if (Number.isFinite(currentSong.bpm)) {
+					rhythmCountBpmSlider.value = currentSong.bpm; 
+					rhythmCountBpmSliderDisplay.textContent = currentSong.bpm;
+				}
 			}
 			if (currentSong.year) {
 				displaySongTitle += ` - [${currentSong.year}]`;
