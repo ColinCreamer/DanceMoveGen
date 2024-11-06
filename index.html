@@ -152,11 +152,11 @@
 	
 	<br><br>
 	
-	
+	<hr>
 	<label>
-        <input type="checkbox" id="autoDrillCheckbox"> Enable Auto Drill Mode
-    </label><br>
-
+        <input type="checkbox" id="autoDrillCheckbox">Auto Drill Mode
+    </label>
+	
     <div id="autoDrillSettings">
         <label for="autoDrillSlider">Auto Drill Interval:</label><br>
         <input type="range" id="autoDrillSlider" min="1" max="60" value="5">
@@ -164,21 +164,23 @@
 		<br>
 		<button id="autoDrillPauseToggle" title="Pause/Resume Drill Timmer">⏸</button>
 		<span id="autoDrillSecondsLeft">5</span>s <i>untill next move</i>
+		
     </div><br>
 
+	<hr>
 	
 	
 
-    <button onclick="generateDanceMove(event)">Generate Dance Move</button>
+
 
     <div id="voiceToggle">
-        <label for="voiceEnabled">Enable Voice:</label>
-        <input type="checkbox" id="voiceEnabled">
+		<input type="checkbox" id="voiceEnabled">
+        <label for="voiceEnabled">Narrate Dance Moves:</label>
     </div>
 	
 	<label>
 	<input type="checkbox" id="rhythmCountCheckbox" />
-		Count Rhythm
+		Narrate Count/Rhythm
 	</label>
 	
 	
@@ -187,31 +189,32 @@
 	<span id="rhythmCountBpmSliderValue">100</span>
 	
 	<br>
+	<hr>
 	
 	<label>
 	<input type="checkbox" id="playMusicCheckbox" />
 		Play music
 	</label>
 	
-
-	
-	
-	
-	
-	
-	<div id="currentSongTitle"></div>
 	<div id="musicControlSettings">
-		
+		<br><br><br>
 		<button id="musicPauseButton" title="Pause/Resume Music Track" class="smallBtn" onclick="toggleMusicPause()">⏸</button>
 		<button onclick="playNextSong()" title="Skip to next Music Track"  class="smallBtn" alt="Next">⏭</button>
-		
-		
 		<label for="bpmRangeSlider" title="BPM Range Filter. Only songs that are within the BPM tempo range will be played if avaialble.">BPM: </label>
 		<div id="bpmRangeSlider"></div>
 		<span id="bpmRangeDisplay">60 - 230 BPM</span>
 		
-		
 	</div>
+	
+	<br>
+	<hr>
+	<br>
+	
+	<div id="currentSongTitle"></div>
+	<br>
+	<button onclick="generateDanceMove(event)">Generate Dance Move</button>
+	<br>
+	
 
 	<br>
     <div id="danceStyle"></div>
