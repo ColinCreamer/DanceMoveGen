@@ -266,7 +266,19 @@
 				{ index: 3.2, name: "Rocking Corté", 						rhythm: "QQSS;QQSS;QQS" },
 				{ index: 4.1, name: "Right Side Fan", 						rhythm: "QQSS;QQSS;QQS" },
 				{ index: 4.2, name: "Three Fan Combination", 				rhythm: "QQSS;SSQQ;QQS" },
-				{ index: 5, name: "Running Step",							rhythm: "SSQQ;SSQQ;QQS" }
+				{ index: 5, name: "Running Step",							rhythm: "SSQQ;SSQQ;QQS" },
+				
+				//Sosial
+				{ index: -101.1, name: "Ponté A",									rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"55;1111;35;2121",		elements: "2 Prominade Walks; 4 closed Steps; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},
+				{ index: -101.2, name: "Ponté B (1 turn)",							rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"55;1111;35;2121",		elements: "2 Prominade Walks; (4 closed Steps) while Follow turning Right; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},
+				{ index: -101.3, name: "Ponté C (2 turns)",							rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"55;1111;35;2121",		elements: "2 Prominade Walks; (4 closed Steps) while Follow turning Right; Ponté, Cross Step Back; (Side Step, Closed Step, Side Step, Closed Step) while Follow turning Left"},
+				{ index: -101.4, name: "Ponté D (Right Promenade Rocking turn)",		rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"55;4444;35;2121",		elements: "First 2 Steps of PTR; 4 right rock Turn Steps; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},
+				{ index: -101.5, name: "Ponté D2 (Left Promenade Rocking turn)",		rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"5[4/5];4444;35;2121",		elements: "First 2 Steps of PTL; 4 Left rock Turn Steps; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},	//[4/5] = Lead 4 / Follow 5
+				
+				{ index: -102.1, name: "Open Fan A",								rhythm: "SS;QQS;S&S&;QQS",		footPos:"55;233;5353;421",			elements: "2 Prominade Walks; (March, March) while Rotate 1/4 right, Ponté towards Eachother; Step Forward, Ponté, Cross Step, Ponté; Tango Close"},
+				{ index: -102.2, name: "Open Fan B (With Ponté Arm Styles)",		rhythm: "SS;QQS;S&S&;QQS",		footPos:"55;233;5353;421",			elements: "2 Prominade Walks; (March, March) while Rotate 1/4 right, Ponté towards Eachother; Step Forward, Ponté, Cross Step, Ponté; Tango Close"},
+				{ index: -102.2, name: "Open Fan C (With Flicks)",					rhythm: "SS;QQS;QQQQ;S&S&;QQS",	footPos:"55;233;3333;5353;421",		elements: "2 Prominade Walks; (March, March) while Rotate 1/4 right, Ponté towards Eachother; 2 Flicks ; Step Forward, Ponté, Cross Step, Ponté; Tango Close"},
+				{ index: -102.2, name: "Open Fan D (Fans in middle)",				rhythm: "SS;QQS;S&S&;QQS",	    footPos:"55;?213;4141;421",	/*? not sure if foot pos is 21, 23 or 33*/	elements: "2 Prominade Walks; (March, March) while sending her out 180 with J-Lead, Ponté towards Eachother; Forward Step, Fan (both),Forward Step, Fan (Follow)/Closed(Lead); Tango Close"},
 			],
 			Rhumba: [
 				{ index: 1.1, name: "Basic Box Step", 					rhythm: "QQS;QQS" },
@@ -296,7 +308,7 @@
 				{ index: 2, name: "Release Break", 						rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56" },
 				{ index: 3.1, name: "Underarm Turns", 					rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56" },
 				{ index: 3.2, name: "Underarm with Man Turning", 		rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56" },
-				{ index: 4, name: "Egg Beater", 						rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" },
+				{ index: 4,	name: "Egg Beater", 						rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" },
 				{ index: 5.1, name: "Single Tuck-In Turn", 				rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" },
 				{ index: 5.2, name: "Double Tuck-In Turn", 				rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" },
 				{ index: 5.3, name: "Shoulder Spin Tuck-In", 			rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" }
@@ -992,7 +1004,7 @@
 			
 
             danceStyleElement.textContent = danceType;
-            danceMoveElement.textContent = floatToNumLeterFormat(danceMove.index) + " " + danceMove.name;
+            danceMoveElement.textContent = floatToNumLetterFormat(danceMove.index) + " " + danceMove.name;
             roleElement.textContent = role;
 			roleImageElement.innerHTML = `
 				<img src="${role === "Lead" ? 'LeadDancerSilhouette.png' : role === "Follow" ? 'FollowDancerSilhouette.png' : 'DancersSilhouette.png'}" 
@@ -1021,7 +1033,32 @@
 		
 		//Converts a decimal Index stored in the move dataset, into the Syllabus format
 		//(Converts 1.1 to 1B.)
-		function floatToNumLeterFormat(num) {
+		function floatToNumLetterFormat(num) {
+			let [whole, decimal] = num.toString().split(".");  	// Split into integer and decimal parts
+			whole = parseInt(whole);							// Parse the integer part
+			decimal = parseInt(decimal || "0");					// Parse the decimal part, default to 0 if undefined
+
+			let prefix = "";
+
+			// Check if in -100s range for "Social" prefix
+			if (whole <= -100 && whole > -200) {
+				whole = Math.abs(whole % 100); // Get positive tens value only
+				prefix = "Social";// add "Social" prefix
+				//return `Social ${whole}${decimalToLetter(decimal)}.`; // Format with "Social" prefix
+			}
+				
+			return `${prefix} ${whole}${decimalToLetter(decimal)}.`; 
+		}
+
+		// Helper function to convert decimal part to letter
+		function decimalToLetter(decimal) {
+			return ["", "a", "b", "c", "d", "e", "f", "g", "h", "i"][decimal] || "";
+		}
+		
+		
+		
+		/*
+		function floatToNumLetterFormat(num) {
 
 			let [whole, decimal] = num.toString().split("."); // Split into integer and decimal parts
 			whole = parseInt(whole); // Parse the integer part
@@ -1041,6 +1078,8 @@
 
 			return `${whole}${suffix}.`; // Format as required
 		}
+	
+		*/
 		
 		//counts the number of beats in a dance move rhythm string
 		//Slows = 2 beats, Quicks = 1 beat, digits = 1 beat
