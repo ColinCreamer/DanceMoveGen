@@ -131,6 +131,8 @@
         <option value="Rhumba">Rhumba</option>
         <option value="Cha-Cha">Cha-Cha</option>
         <option value="East Coast Swing">East Coast Swing</option>
+		<option value="Mambo">Mambo</option>
+		<option value="Samba">Samba</option>
     </select><br><br>
 
     <label for="roles">Select Role:</label><br>
@@ -272,8 +274,8 @@
 				{ index: -101.1, name: "Ponté A",									rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"55;1111;35;2121",		elements: "2 Prominade Walks; 4 closed Steps; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},
 				{ index: -101.2, name: "Ponté B (1 turn)",							rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"55;1111;35;2121",		elements: "2 Prominade Walks; (4 closed Steps) while Follow turning Right; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},
 				{ index: -101.3, name: "Ponté C (2 turns)",							rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"55;1111;35;2121",		elements: "2 Prominade Walks; (4 closed Steps) while Follow turning Right; Ponté, Cross Step Back; (Side Step, Closed Step, Side Step, Closed Step) while Follow turning Left"},
-				{ index: -101.4, name: "Ponté D (Right Promenade Rocking turn)",		rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"55;4444;35;2121",		elements: "First 2 Steps of PTR; 4 right rock Turn Steps; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},
-				{ index: -101.5, name: "Ponté D2 (Left Promenade Rocking turn)",		rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"5[4/5];4444;35;2121",		elements: "First 2 Steps of PTL; 4 Left rock Turn Steps; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},	//[4/5] = Lead 4 / Follow 5
+				{ index: -101.4, name: "Ponté D (PTR Rocking turn)",				rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"55;4444;35;2121",		elements: "First 2 Steps of PTR; 4 right rock Turn Steps; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},
+				{ index: -101.5, name: "Ponté D2 (PTL Rocking turn)",				rhythm: "SS;QQQQ;SS;QQQQ",		footPos:"5[4/5];4444;35;2121",		elements: "First 2 Steps of PTL; 4 Left rock Turn Steps; Ponté, Cross Step Back; Side Step, Closed Step, Side Step, Closed Step"},	//[4/5] = Lead 4 / Follow 5
 				
 				{ index: -102.1, name: "Open Fan A",								rhythm: "SS;QQS;S&S&;QQS",		footPos:"55;233;5353;421",			elements: "2 Prominade Walks; (March, March) while Rotate 1/4 right, Ponté towards Eachother; Step Forward, Ponté, Cross Step, Ponté; Tango Close"},
 				{ index: -102.2, name: "Open Fan B (With Ponté Arm Styles)",		rhythm: "SS;QQS;S&S&;QQS",		footPos:"55;233;5353;421",			elements: "2 Prominade Walks; (March, March) while Rotate 1/4 right, Ponté towards Eachother; Step Forward, Ponté, Cross Step, Ponté; Tango Close"},
@@ -312,6 +314,13 @@
 				{ index: 5.1, name: "Single Tuck-In Turn", 				rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" },
 				{ index: 5.2, name: "Double Tuck-In Turn", 				rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" },
 				{ index: 5.3, name: "Shoulder Spin Tuck-In", 			rhythm: "1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;1&2,3&4,56;" }
+			],
+			"Mambo": [
+				{ index: 1.1, name: "Box Step", 				rhythm: "123-4;123-4" ,	footPos: "442;442", elements: "Forward Rockstep, Side Step; Back Rockstep, Side Step"}//,
+			],
+			"Samba": [
+				{ index: 1.1, name: "Basic", 				rhythm: "1&2;1&2",	footPos: "41;41", elements: "Forward Ballance Step; Back Ballance Step"}, 
+				{ index: 1.2, name: "Left Box Turn", 		rhythm: "1&2;1&2",	footPos: "42;42", elements: "Forward Ballance Step to side; Back Ballance Step to side" }
 			]
 		};
 
