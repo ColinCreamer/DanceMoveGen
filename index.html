@@ -109,6 +109,35 @@
 			/*align-items: center;*/
 		}
 
+
+		#helpButton {
+			display: block;
+			margin: 10px auto;
+			padding: 5px 10px;
+			background-color: #007bff;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		#helpButton:hover {
+			background-color: #0056b3;
+		}
+
+		#helpDisplay {
+			margin: 10px auto;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			background-color: #f9f9f9;
+			display: none;
+		}
+
+		#helpDisplay.visible {
+			display: block;
+		}
+
 		
     </style>
 	
@@ -225,6 +254,10 @@
     <div id="danceMove"></div>
     <div id="role"></div>
     <div id="roleImage"></div>
+	
+	
+	<button id="helpButton">Help</button>
+	<div id="helpDisplay" class="hidden"></div>
 
     <div id="progressBarContainer">
         <div id="progressBar"></div>
@@ -732,6 +765,10 @@
 		const rhythmCountBpmSliderDisplay = document.getElementById("rhythmCountBpmSliderValue");
 		const repeatCountCheckbox = document.getElementById("repeatCountCheckbox");
 		const measureCountingCheckbox = document.getElementById("measureCountingCheckbox");
+		const helpButton = document.getElementById("helpButton");
+		const helpDisplay = document.getElementById("helpDisplay");
+
+
 
 		
 		const currentSongTitle = document.getElementById("currentSongTitle");
@@ -940,6 +977,19 @@
 
 
 
+		helpButton.addEventListener("click", () => {
+			// Format the active dance move data
+			let moveDetails = ""; 
+			
+			if (currentDanceMove.rhythm) moveDetails+= "<strong>Rhythm:</strong> " + currentDanceMove.rhythm + " <br>";
+			if (currentDanceMove.footPos) moveDetails+= "<strong>Foot Positions:</strong> " + currentDanceMove.footPos+ " <br>";
+			if (currentDanceMove.elements) moveDetails+= "<strong>Elements:</strong> " + currentDanceMove.elements + " <br>";
+
+			// Toggle visibility and populate the help display
+			helpDisplay.innerHTML = moveDetails;
+			helpDisplay.classList.toggle("visible");
+		});
+
 
 
 		function startAutoDrill() {
@@ -1060,7 +1110,8 @@
 				playMusic(danceType);
 			}
 			
-			
+			// Hide the help display when a new move is generated
+			helpDisplay.classList.remove("visible");
 			
         }
 		
