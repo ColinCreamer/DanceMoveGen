@@ -209,6 +209,14 @@
         <label for="voiceEnabled">Narrate Dance Moves:</label>
     </div>
 	
+	<div id="voiceCommandControl" title="Use your voice to execute commands. Valid commands: Next, Play Music, Stop Music, Help">
+		<label>
+			<input type="checkbox" id="voiceCommandCheckbox" >
+			Enable Voice Commands 🎤
+		</label>
+	</div>
+	
+	
 	<label>
 		<input type="checkbox" id="rhythmCountCheckbox" />
 		Narrate Count/Rhythm
@@ -1676,6 +1684,77 @@
 			maxBpmVal = parseInt(values[1]);
 			document.getElementById("bpmRangeDisplay").textContent = `${minBpmVal} - ${maxBpmVal} BPM`;
 		});
+		
+		
+		
+		
+		
+		
+		// Check for Speech Recognition API support
+		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+		if (SpeechRecognition) {
+			const recognition = new SpeechRecognition();
+			recognition.continuous = true; // Listen continuously
+			recognition.lang = "en-US"; // Set language to English
+			recognition.interimResults = false; // Only finalize results
+			recognition.maxAlternatives = 1; // Use the most confident match
+
+			let isListening = false; // Track microphone state
+
+			// Toggle voice command functionality based on checkbox state
+			const voiceCommandCheckbox = document.getElementById("voiceCommandCheckbox");
+
+			voiceCommandCheckbox?.addEventListener("change", () => {
+				if (voiceCommandCheckbox.checked) {
+					recognition.start();
+					console.log("Voice commands enabled. Microphone is listening...");
+					isListening = true;
+				} else {
+					recognition.stop();
+					console.log("Voice commands disabled. Microphone stopped listening.");
+					isListening = false;
+				}
+			});
+
+			// Handle recognized speech
+			recognition.onresult = (event) => {
+				const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+				console.log("Recognized Command:", transcript);
+
+				// Handle voice commands
+				if (transcript === "next") {
+					generateDanceMove(); // Call function to generate the next move
+				} else if (transcript === "help") {
+					helpButton.click(); // Simulate help button click
+				} else if (transcript === "autodrill" || transcript === "auto drill") {
+					autoDrillCheckbox.click(); 
+				} else if (transcript === "stop music") {
+					if (!isMusicPaused) toggleMusicPause();
+				} else if (transcript === "play music") {
+					if (!playMusicCheckbox.checked){
+						playMusicCheckbox.click();
+					}
+					if (isMusicPaused) toggleMusicPause();
+					
+				} else {
+					console.log("Unknown command:", transcript);
+				}
+			};
+
+			// Handle recognition errors
+			recognition.onerror = (event) => {
+				console.error("Speech Recognition Error:", event.error);
+			};
+
+			recognition.onend = () => {
+				console.log("Speech Recognition stopped.");
+				if (isListening) recognition.start(); // Restart if microphone is still active
+			};
+		} else {
+			console.error("Speech Recognition API not supported in this browser.");
+		}
+
 		
 		
 		
