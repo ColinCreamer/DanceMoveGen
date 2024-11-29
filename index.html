@@ -216,6 +216,12 @@
 		</label>
 	</div>
 	
+	<div title="Clap for next dance move.">
+		<label>
+			<input type="checkbox" id="clapDetectionCheckbox">
+			Enable Clap Detection
+		</label>
+	</div>	
 	
 	<label>
 		<input type="checkbox" id="rhythmCountCheckbox" />
@@ -1690,6 +1696,7 @@
 		
 		
 		
+		
 		// Check for Speech Recognition API support
 		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -1755,6 +1762,91 @@
 			console.error("Speech Recognition API not supported in this browser.");
 		}
 
+		
+		
+		
+		///------CLAP DETECTION----------
+		
+		let audioContext;
+		let analyser;
+		let dataArray;
+		let isClapEnabled = false;
+
+		// Threshold for clap detection (adjust for sensitivity)
+		const CLAP_THRESHOLD = 0.75;
+		const CLAP_DETECTION_DELAY = 600; // Minimum time (ms) between claps
+
+		let lastClapTime = 0;
+
+		function enableClapDetection() {
+			navigator.mediaDevices.getUserMedia({ audio: true })
+				.then((stream) => {
+					audioContext = new AudioContext();
+					const source = audioContext.createMediaStreamSource(stream);
+
+					analyser = audioContext.createAnalyser();
+					analyser.fftSize = 256; // Smaller size for faster processing
+					dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+					source.connect(analyser);
+
+					console.log("Clap detection enabled.");
+					isClapEnabled = true;
+					listenForClaps();
+				})
+				.catch((error) => {
+					console.error("Error accessing microphone:", error);
+				});
+		}
+
+		function disableClapDetection() {
+			if (audioContext) {
+				audioContext.close();
+				audioContext = null;
+				console.log("Clap detection disabled.");
+			}
+			isClapEnabled = false;
+		}
+
+		function listenForClaps() {
+			if (!isClapEnabled) return;
+
+			analyser.getByteTimeDomainData(dataArray);
+
+			// Normalize audio data and calculate average amplitude
+			let maxAmplitude = 0;
+			for (let i = 0; i < dataArray.length; i++) {
+				const normalizedValue = dataArray[i] / 128 - 1; // Normalize to range -1 to 1
+				maxAmplitude = Math.max(maxAmplitude, Math.abs(normalizedValue));
+			}
+
+			const currentTime = Date.now();
+			if (maxAmplitude > CLAP_THRESHOLD && currentTime - lastClapTime > CLAP_DETECTION_DELAY) {
+				console.log("Clap detected!");
+				lastClapTime = currentTime;
+
+				// Trigger the next move
+				generateDanceMove();
+			}
+
+			// Continue listening
+			requestAnimationFrame(listenForClaps);
+		}
+
+
+		// Add a checkbox to enable/disable clap detection
+		document.addEventListener("DOMContentLoaded", () => {
+			const clapCheckbox = document.getElementById("clapDetectionCheckbox");
+			clapCheckbox.addEventListener("change", (event) => {
+				if (event.target.checked) {
+					enableClapDetection();
+				} else {
+					disableClapDetection();
+				}
+			});
+		});
+
+				
 		
 		
 		
